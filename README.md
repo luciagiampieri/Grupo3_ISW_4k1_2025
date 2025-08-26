@@ -1,11 +1,13 @@
 # Grupo3_ISW_4k1_2025
-1. Bautista Casoria 94807
-2. Fátima Chialva 95147
-3. Gonzalo Ferraro 96778
-4. Pedro Gabrielli 97773
-5. Andrea Ticiana Gatica 94371
-6. Franco Giorda 94561
-7. Lucia Giampieri 96505
-8. María Candela Paez 95256
-9. Joaquin Peñafort 94533
-10. Manuel Francisco Viale 95786
+
+Integrantes:
+1. CASORIA, Bautista – 94807
+2. CHIALVA, Fátima – 95147
+3. FERRARO, Gonzalo – 96778
+4. GABRIELLI, Pedro – 97773
+5. GATICA, Andrea Ticiana – 94371
+6. GIORDA, Franco – 94561
+7. GIAMPIERI, Lucía Belén – 96505
+8. PAEZ, María Candela – 95256
+9. PEÑAFORT, Joaquín – 94533
+10. VIALE, Manuel Francisco – 95786
