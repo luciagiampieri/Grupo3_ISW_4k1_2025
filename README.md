@@ -32,6 +32,7 @@ Grupo3_ISW_4k1_2025
 ├── README.md
 │
 ├── MaterialAlumnos
+│   ├── Ejercicios
 │   ├── TomaDeNotas
 │   └── Resumenes
 │
