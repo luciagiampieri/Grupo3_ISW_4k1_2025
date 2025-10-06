@@ -57,7 +57,8 @@ Grupo3_ISW_4k1_2025
 
 | Ítem de Configuración | Regla de Nombrado | Ubicación |
 |------------------------|-------------------|-----------|
-| **Toma de Notas** | `TomaNotas_<<DDMM>>.<<docx/pdf/jpg>>` | `Grupo3_ISW_4k1_2025/MaterialAlumnos/TomaDeNotas` |
+| **Ejercicios** | `Ejercicio_<<Tema>>_<<Autor>>.<<docx/pdf/jpg>>` | `Grupo3_ISW_4k1_2025/MaterialAlumnos/Ejercicios` |
+| **Toma de Notas** | `TomaNotas_<<DDMM>>_<<Autor>>.<<docx/pdf/jpg>>` | `Grupo3_ISW_4k1_2025/MaterialAlumnos/TomaDeNotas` |
 | **Resumen** | `Resumen_<<Número_Unidad>>_<<Autor>>.<<docx/pdf/jpg>>` | `Grupo3_ISW_4k1_2025/MaterialAlumnos/Resumenes` |
 | **Bibliografía** | `<<Nombre>>.pdf` | `Grupo3_ISW_4k1_2025/MaterialesDeClase/<<NúmeroUnidad>>/Bibliografía` |
 | **Diapositiva de Clase** | `<<Nombre>>.pdf` | `Grupo3_ISW_4k1_2025/MaterialesDeClase/<<NúmeroUnidad>>/Diapositivas` |
