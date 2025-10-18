@@ -95,3 +95,17 @@ class TestCompra:
             assert r2 == False
 
             print("✅ Test fecha válida pasó correctamente.")
+
+      
+      def test_fecha_invalida(self):
+
+            # --- Precondiciones ---
+            fechas = [date(2025, 9, 23), date(2025, 1, 1), date(2025, 12, 25), date(2025, 10, 27)]
+
+            # --- Pasos del caso de prueba ---
+            resultados = [Entrada(fecha_visita=f).validarFecha() for f in fechas]
+
+            # --- Resultados esperados ---
+            assert all(r == False for r in resultados)
+
+            print("✅ Test fecha inválida pasó correctamente.")
