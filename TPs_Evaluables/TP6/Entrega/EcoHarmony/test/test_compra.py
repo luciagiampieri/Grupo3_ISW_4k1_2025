@@ -59,3 +59,22 @@ class TestCompra:
             assert e2 == True
 
             print("✅ Test validar cantidad pasó correctamente.")
+      
+
+      def test_validar_cantidad_invalida(self):
+
+            # --- Precondiciones ---
+            detalles = [DetalleEntrada(edad_visitante=20)] # Crea un detalle de entrada con edad 20 
+            entradas = [
+                  Entrada(cantidad=0, detalles=[]), # Cantidad 0, detalles vacíos
+                  Entrada(cantidad=-2, detalles=[]), # Cantidad negativa, detalles vacíos
+                  Entrada(cantidad=11, detalles=detalles * 11) 
+            ]
+
+            # --- Pasos del caso de prueba ---
+            resultados = [e.validarCantidadEntradas() for e in entradas] 
+
+            # --- Resultados esperados ---
+            assert all(r == False for r in resultados)
+
+            print("✅ Test validar cantidad inválida pasó correctamente.")
