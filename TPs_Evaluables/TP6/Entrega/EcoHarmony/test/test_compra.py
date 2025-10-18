@@ -78,3 +78,20 @@ class TestCompra:
             assert all(r == False for r in resultados)
 
             print("✅ Test validar cantidad inválida pasó correctamente.")
+
+
+      def test_fecha_valida(self):
+
+            # --- Precondiciones ---
+            entrada_hoy = Entrada(fecha_visita=date.today())
+            entrada_futuro = Entrada(fecha_visita=date(2025, 11, 15))
+
+            # --- Pasos del caso de prueba ---
+            r1 = entrada_hoy.validarFecha()
+            r2 = entrada_futuro.validarFecha()
+
+            # --- Resultados esperados ---
+            assert r1 == True
+            assert r2 == False
+
+            print("✅ Test fecha válida pasó correctamente.")
