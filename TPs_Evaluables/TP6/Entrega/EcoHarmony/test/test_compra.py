@@ -61,3 +61,26 @@ class TestCompra:
 
             # --- Mensaje final ---
             print("✅ Test fecha válida pasó correctamente.")
+      
+
+      def test_fecha_invalida():
+            # --- Precondiciones ---
+            fecha_pasada = date.today() - timedelta(days=1) # verificamos que la fecha ingresada no sea una fecha pasada
+            fecha_festiva = date(2025, 1, 1)
+            fecha_festiva2 = date(2025, 12, 25)
+            fecha_invalida2 = date(2025, 10, 27)  # fecha Lunes
+
+            # --- Pasos del caso de prueba ---
+            resultado = validarFecha(fecha_pasada)
+            resultado2 = validarFecha(fecha_festiva)
+            resultado3 = validarFecha(fecha_festiva2)
+            resultado4 = validarFecha(fecha_invalida2)
+
+            # --- Resultados esperados ---
+            assert resultado == False
+            assert resultado2 == False
+            assert resultado3 == False
+            assert resultado4 == False
+
+            # --- Mensaje final ---
+            print("✅ Test fecha pasada pasó correctamente.")
