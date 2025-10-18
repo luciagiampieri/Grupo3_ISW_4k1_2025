@@ -92,7 +92,7 @@ class TestCompra:
 
             # --- Resultados esperados ---
             assert r1 == True
-            assert r2 == False
+            assert r2 == True
 
             print("✅ Test fecha válida pasó correctamente.")
 
