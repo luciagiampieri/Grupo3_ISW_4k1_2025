@@ -1,86 +1,61 @@
-from datetime import date, timedelta
-from backend.utils import (
-      validarCantidadEntradas,
-      validarFecha
-)
+import pytest
+from datetime import date
+from backend.models.Entrada import Entrada
+from backend.models.DetalleEntrada import DetalleEntrada
+from backend.models.FormaPago import FormaPago
+from backend.models.TipoEntrada import TipoEntrada
+from backend.models.Usuario import Usuario
 
 
 class TestCompra:
 
-      # 1. Validar cantidad de entradas
+      # Tests que Faltan:
+      # - Que haya una BD y que esté cargada.
+      # - Los de creación de los objetos.
+      # - Los de asociaciones/herencia/composición entre objetos.
+
+      @pytest.fixture
+      def entrada(self):
+            # --- Precondiciones ---
+            tipo = TipoEntrada(id_tipo_entrada=1, nombre="regular", descripcion="Entrada general", precio=5000)
+            usuario = Usuario(id_usuario=1, contraseña="1234", mail="fachi@gmail.com")
+            forma_pago = FormaPago(id_forma_pago=1, nombre="tarjeta débito", descripcion="Pago con tarjeta")
+            detalles = [
+                  DetalleEntrada(id_detalle_entrada=1, edad_visitante=30, monto=5000),
+                  DetalleEntrada(id_detalle_entrada=2, edad_visitante=9, monto=2500)
+            ]
+
+            # --- Pasos del caso de prueba ---
+            entrada = Entrada(
+                  id_entrada=1,
+                  tipo_entrada=tipo,
+                  fecha_compra=date(2025, 10, 20),
+                  cantidad=len(detalles),
+                  usuario=usuario,
+                  fecha_visita=date(2025, 10, 23),
+                  forma_pago=forma_pago,
+                  detalles=detalles
+            )
+
+            # --- Resultados esperados ---
+            return entrada
+
+
       def test_validar_cantidad(self):
+
             # --- Precondiciones ---
-            cantidad1 = 10 # Cantidad válida de entradas que el usuario puede comprar, la cantidad maxima es 10
-            cantidad2 = 3  # Cantidad mínima válida de entradas que el usuario puede comprar
+            detalles1 = [DetalleEntrada(edad_visitante=25) for _ in range(10)]
+            detalles2 = [DetalleEntrada(edad_visitante=25) for _ in range(3)]
+
+            entrada1 = Entrada(cantidad=10, detalles=detalles1)
+            entrada2 = Entrada(cantidad=3, detalles=detalles2)
 
             # --- Pasos del caso de prueba ---
-            resultado1 = validarCantidadEntradas(cantidad1) #la funcion validar entrada, va a devolver True o False de acuerdo a la cantidad seleccionada
-            resultado2 = validarCantidadEntradas(cantidad2)
+            e1 = entrada1.validarCantidadEntradas()
+            e2 = entrada2.validarCantidadEntradas()
 
             # --- Resultados esperados ---
-            assert resultado1 == True
-            assert resultado2 == True
+            assert e1 == True
+            assert e2 == True
 
-
-            # --- Mensaje final ---
             print("✅ Test validar cantidad pasó correctamente.")
-
-
-      def test_validar_cantidad_invalida(self): #en esta poner todos los casos invalidos, porque estamos probando lo mismo 
-                  # --- Precondiciones ---
-                  cantidad1 = 0 # cantidad inv
-                  cantidad2 = -2 # cantidad invalida negativa
-                  cantidad3 = 11 # cantidad invalida mayor a 10
-
-                  # --- Pasos del caso de prueba ---
-                  resultado1 = validarCantidadEntradas(cantidad1)
-                  resultado2 = validarCantidadEntradas(cantidad2)
-                  resultado3 = validarCantidadEntradas(cantidad3)
-
-                  # --- Resultados esperados ---
-                  assert resultado1 == False
-                  assert resultado2 == False
-                  assert resultado3 == False
-
-                  # --- Mensaje final ---
-                  print("✅ Test validar cantidad inválida pasó correctamente.")
-
-
-      def test_fecha_valida():
-            # --- Precondiciones ---
-            fecha = date.today()                # VERIFICAR SI HAY CUPOS DE ENTRADAS AL PARQUE POR DÍA
-            fecha_futuro = date(2025, 11, 15)   # Fecha futura válida
-
-            # --- Pasos del caso de prueba ---
-            resultado = validarFecha(fecha)
-            resultado2 = validarFecha(fecha_futuro)
-
-            # --- Resultados esperados ---
-            assert resultado == True
-            assert resultado2 == False
-
-            # --- Mensaje final ---
-            print("✅ Test fecha válida pasó correctamente.")
-      
-
-      def test_fecha_invalida():
-            # --- Precondiciones ---
-            fecha_pasada = date.today() - timedelta(days=1) # verificamos que la fecha ingresada no sea una fecha pasada
-            fecha_festiva = date(2025, 1, 1)
-            fecha_festiva2 = date(2025, 12, 25)
-            fecha_invalida2 = date(2025, 10, 27)  # fecha Lunes
-
-            # --- Pasos del caso de prueba ---
-            resultado = validarFecha(fecha_pasada)
-            resultado2 = validarFecha(fecha_festiva)
-            resultado3 = validarFecha(fecha_festiva2)
-            resultado4 = validarFecha(fecha_invalida2)
-
-            # --- Resultados esperados ---
-            assert resultado == False
-            assert resultado2 == False
-            assert resultado3 == False
-            assert resultado4 == False
-
-            # --- Mensaje final ---
-            print("✅ Test fecha pasada pasó correctamente.")
