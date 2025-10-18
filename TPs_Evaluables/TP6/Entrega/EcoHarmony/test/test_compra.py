@@ -21,3 +21,23 @@ class TestCompra:
 
             # --- Mensaje final ---
             print("✅ Test validar cantidad pasó correctamente.")
+
+
+def test_validar_cantidad_invalida(self): #en esta poner todos los casos invalidos, porque estamos probando lo mismo 
+            # --- Precondiciones ---
+            cantidad1 = 0 # cantidad inv
+            cantidad2 = -2 # cantidad invalida negativa
+            cantidad3 = 11 # cantidad invalida mayor a 10
+
+            # --- Pasos del caso de prueba ---
+            resultado1 = validarCantidadEntradas(cantidad1)
+            resultado2 = validarCantidadEntradas(cantidad2)
+            resultado3 = validarCantidadEntradas(cantidad3)
+
+            # --- Resultados esperados ---
+            assert resultado1 == False
+            assert resultado2 == False
+            assert resultado3 == False
+
+            # --- Mensaje final ---
+            print("✅ Test validar cantidad inválida pasó correctamente.")
