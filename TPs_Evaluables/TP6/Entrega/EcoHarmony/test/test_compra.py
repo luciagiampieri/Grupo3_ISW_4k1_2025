@@ -137,4 +137,16 @@ class TestCompra:
 
             print("✅ Test usuario no registrado pasó correctamente.")
 
+      def test_pago_tarjeta_redirige_mercado_pago(self):
+
+            # --- Precondiciones ---
+            forma_pago = FormaPago(nombre="tarjeta débito")
+
+            # --- Pasos del caso de prueba ---
+            resultado = forma_pago.redireccionarPago()
+
+            # --- Resultados esperados ---
+            assert resultado == True
+
+            print("✅ Test pago con tarjeta redirige correctamente a Mercado Pago.")
       
