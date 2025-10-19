@@ -109,3 +109,17 @@ class TestCompra:
             assert all(r == False for r in resultados)
 
             print("✅ Test fecha inválida pasó correctamente.")
+
+
+      def test_usuario_registrado(self):
+
+            # --- Precondiciones ---
+            usuario = Usuario(mail="lucia@gmail.com")
+
+            # --- Pasos del caso de prueba ---
+            resultado = usuario.esUsuarioRegistrado()
+
+            # --- Resultados esperados ---
+            assert resultado == True
+
+            print("✅ Test usuario registrado pasó correctamente.")
