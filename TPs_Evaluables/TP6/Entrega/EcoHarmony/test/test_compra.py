@@ -123,3 +123,18 @@ class TestCompra:
             assert resultado == True
 
             print("✅ Test usuario registrado pasó correctamente.")
+
+      def test_usuario_no_registrado(self):
+
+            # --- Precondiciones ---
+            usuario = Usuario(mail="lucia")
+
+            # --- Pasos del caso de prueba ---
+            resultado = usuario.esUsuarioRegistrado()
+
+            # --- Resultados esperados ---
+            assert resultado == False
+
+            print("✅ Test usuario no registrado pasó correctamente.")
+
+      
