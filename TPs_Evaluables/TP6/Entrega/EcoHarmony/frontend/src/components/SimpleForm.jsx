@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import "./SimpleForm.css";
 
 // Cierra los LUNES (1) | 0=Dom, 1=Lun, ... 6=Sáb
@@ -63,7 +64,8 @@ function isTodayOrFuture(dateStr) {
   return d >= today;
 }
 
-export default function SimpleForm({ onShowDetail }) {
+export default function SimpleForm() {
+  const navigate = useNavigate();
   const [cantidad, setCantidad] = useState(1);
   const [fecha, setFecha] = useState("");
   const [email, setEmail] = useState("");
@@ -250,9 +252,11 @@ export default function SimpleForm({ onShowDetail }) {
       usuario_email: email,
       fecha_visita: fecha,
       forma_pago_nombre: pago,
-      detalles: personas.map((p) => ({
+      total: calculoPrecios.total, // Agregar el total calculado
+      detalles: personas.map((p, index) => ({
         edad_visitante: Number(p.edad),
         tipo_entrada_nombre: p.pase.toLowerCase(), // Fix
+        precio: calculoPrecios.detalles[index], // Agregar el precio individual
       })),
     };
 
@@ -280,14 +284,16 @@ export default function SimpleForm({ onShowDetail }) {
         // Muestra el mensaje de confirmación real
         setOkMsg(`¡Compra confirmada! Estado: ${resultado.status}.`);
 
-        // Si el backend nos dio una URL de Mercado Pago, redirigimos
-        // if (resultado.redirect_url) {
-        //   // Usamos un pequeño delay para que el usuario alcance a leer el msg
-        //   setTimeout(() => {
-        //     window.location.assign(resultado.redirect_url);
-        //   }, 1500);
-        // }
+        // Redirige a la pantalla simulada de Mercado Pago si corresponde
+        if (datosCompra.forma_pago_nombre === 'tarjeta') {
+          // Guardar datos en sessionStorage para acceder desde la otra ruta
+          sessionStorage.setItem('purchaseData', JSON.stringify(datosCompra));
+          setTimeout(() => {
+            navigate('/fakemercadopago');
+          }, 500);
+        }
       }
+
     } catch (error) {
       console.error("Error de conexión:", error);
       setErrors({
@@ -443,12 +449,15 @@ export default function SimpleForm({ onShowDetail }) {
 
         {okMsg && <p className="ok">{okMsg}</p>}
         
-        {/* Botón para ver detalle si la compra fue con tarjeta y está completada */}
-        {purchaseCompleted && pago === "tarjeta" && (
+        {/* Botón para ver detalle si la compra fue con efectivo y está completada */}
+        {purchaseCompleted && pago === "efectivo" && (
           <button 
             className="btn btn-detail" 
             type="button"
-            onClick={() => onShowDetail(purchaseData)}
+            onClick={() => {
+              sessionStorage.setItem('purchaseData', JSON.stringify(purchaseData));
+              navigate('/detalle-compra');
+            }}
           >
             Ver Detalle de Compra
           </button>

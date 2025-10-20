@@ -1,54 +1,40 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./PurchaseDetail.css";
 
-export default function PurchaseDetail({ purchaseData, onBack }) {
+export default function PurchaseDetail() {
+  const navigate = useNavigate();
   const [detalles, setDetalles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [purchaseData, setPurchaseData] = useState(null);
 
   useEffect(() => {
-    // Cargar los detalles de la compra desde el backend
-    const fetchDetalles = async () => {
-      try {
-        // Aquí puedes hacer una llamada a la API para obtener los detalles completos
-        // Por ahora, usamos los datos que ya tenemos
-        setDetalles(purchaseData.detalles || []);
-        setLoading(false);
-      } catch (err) {
-        setError("Error al cargar los detalles de la compra");
-        setLoading(false);
-      }
-    };
+    // Cargar los datos desde sessionStorage
+    const storedData = sessionStorage.getItem('purchaseData');
+    if (!storedData) {
+      setError("No hay datos de compra disponibles");
+      setLoading(false);
+      return;
+    }
 
-    fetchDetalles();
-  }, [purchaseData]);
-
-  const calcularPrecioTotal = () => {
-    let total = 0;
-    detalles.forEach((detalle) => {
-      const edad = detalle.edad_visitante;
-      const tipo = detalle.tipo_entrada_nombre;
-      
-      // Lógica de precios (ajusta según tu backend)
-      let precio = 0;
-      if (tipo === "regular") {
-        if (edad < 12) precio = 5000;
-        else if (edad >= 65) precio = 8000;
-        else precio = 10000;
-      } else if (tipo === "vip") {
-        if (edad < 12) precio = 8000;
-        else if (edad >= 65) precio = 12000;
-        else precio = 15000;
-      }
-      total += precio;
-    });
-    return total;
-  };
+    try {
+      const data = JSON.parse(storedData);
+      setPurchaseData(data);
+      setDetalles(data.detalles || []);
+      setLoading(false);
+    } catch (err) {
+      setError("Error al cargar los detalles de la compra");
+      setLoading(false);
+    }
+  }, []);
 
   const formatearPrecio = (precio) => {
     return new Intl.NumberFormat("es-AR", {
       style: "currency",
       currency: "ARS",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(precio);
   };
 
@@ -62,12 +48,12 @@ export default function PurchaseDetail({ purchaseData, onBack }) {
     );
   }
 
-  if (error) {
+  if (error || !purchaseData) {
     return (
       <div className="detail-wrapper">
         <div className="card">
-          <p className="err">{error}</p>
-          <button className="btn" onClick={onBack}>
+          <p className="err">{error || "No hay datos de compra"}</p>
+          <button className="btn" onClick={() => navigate('/')}>
             Volver
           </button>
         </div>
@@ -104,17 +90,7 @@ export default function PurchaseDetail({ purchaseData, onBack }) {
             {detalles.map((detalle, index) => {
               const edad = detalle.edad_visitante;
               const tipo = detalle.tipo_entrada_nombre;
-              
-              let precio = 0;
-              if (tipo === "regular") {
-                if (edad < 12) precio = 5000;
-                else if (edad >= 65) precio = 8000;
-                else precio = 10000;
-              } else if (tipo === "vip") {
-                if (edad < 12) precio = 8000;
-                else if (edad >= 65) precio = 12000;
-                else precio = 15000;
-              }
+              const precio = detalle.precio || 0; // Usar el precio que viene del cálculo original
 
               return (
                 <div key={index} className="ticket-item">
@@ -142,12 +118,15 @@ export default function PurchaseDetail({ purchaseData, onBack }) {
         <div className="total-section">
           <div className="total-row">
             <span className="total-label">Total:</span>
-            <span className="total-value">{formatearPrecio(calcularPrecioTotal())}</span>
+            <span className="total-value">{formatearPrecio(purchaseData.total || 0)}</span>
           </div>
         </div>
 
         <div className="detail-actions">
-          <button className="btn btn-primary" onClick={onBack}>
+          <button className="btn btn-primary" onClick={() => {
+            sessionStorage.removeItem('purchaseData');
+            navigate('/');
+          }}>
             Nueva Compra
           </button>
         </div>

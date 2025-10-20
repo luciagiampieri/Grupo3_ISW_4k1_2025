@@ -1,37 +1,32 @@
-
-import { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import './App.css'
 import SimpleForm from './components/SimpleForm.jsx'
 import PurchaseDetail from './components/PurchaseDetail.jsx'
 import NavBar from './components/NavBar.jsx'
+import NavBarMP from './components/NavBarMP.jsx'
+import FakeMercadoPago from './components/FakeMercadoPago.jsx'
 
-function App() {
-  const [currentView, setCurrentView] = useState('form'); // 'form' | 'detail'
-  const [purchaseData, setPurchaseData] = useState(null);
-
-  const handleShowDetail = (data) => {
-    setPurchaseData(data);
-    setCurrentView('detail');
-  };
-
-  const handleBackToForm = () => {
-    setCurrentView('form');
-    setPurchaseData(null);
-  };
+function AppContent() {
+  const location = useLocation();
+  const isMercadoPago = location.pathname === '/fakemercadopago';
 
   return (
     <>
-      <NavBar />
-      {currentView === 'form' && (
-        <SimpleForm onShowDetail={handleShowDetail} />
-      )}
-      {currentView === 'detail' && purchaseData && (
-        <PurchaseDetail 
-          purchaseData={purchaseData} 
-          onBack={handleBackToForm} 
-        />
-      )}
+      {isMercadoPago ? <NavBarMP /> : <NavBar />}
+      <Routes>
+        <Route path="/" element={<SimpleForm />} />
+        <Route path="/detalle-compra" element={<PurchaseDetail />} />
+        <Route path="/fakemercadopago" element={<FakeMercadoPago />} />
+      </Routes>
     </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   )
 }
 
