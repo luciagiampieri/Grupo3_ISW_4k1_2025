@@ -1,4 +1,4 @@
-from modelos.tipoEntrada import TipoEntrada
+from tipoEntrada import TipoEntrada
 
 class DetalleEntrada:
 

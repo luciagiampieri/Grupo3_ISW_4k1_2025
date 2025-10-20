@@ -84,17 +84,70 @@ export default function SimpleForm() {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (ev) => {
+  // Reemplaza tu handleSubmit por esta versión
+  const handleSubmit = async (ev) => {
     ev.preventDefault();
     setOkMsg("");
-    if (!validate()) return;
+    setErrors({}); // Limpia errores previos
 
-    // Simulación de confirmación "vía mail"
-    setOkMsg(`¡Listo! Enviamos la confirmación a ${email}.`);
+    // 1. Ejecuta la validación del frontend primero
+    if (!validate()) {
+      console.log("Error de validación del frontend.");
+      return;
+    }
 
-    // Redirección si el pago es con tarjeta
-    if (pago === "tarjeta") {
-      window.location.assign("https://www.mercadopago.com.ar/");
+    // 2. Prepara el JSON para el backend
+    //    (Traduciendo los nombres de estado del front a los esperados por la API)
+    const datosCompra = {
+      usuario_email: email,
+      fecha_visita: fecha,
+      forma_pago_nombre: pago, // "efectivo" o "tarjeta"
+      detalles: personas.map((p) => ({
+        edad_visitante: Number(p.edad), // Aseguramos que sea número
+        tipo_entrada_nombre: p.pase, // "regular" o "vip"
+      })),
+    };
+
+    try {
+      // 3. Llama a la API de Flask (¡la que creamos!)
+      const response = await fetch("http://127.0.0.1:5000/api/comprar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(datosCompra),
+      });
+
+      // 4. Obtiene la respuesta del backend
+      const resultado = await response.json();
+
+      // 5. Maneja la respuesta
+      if (!response.ok) {
+        // Si el backend devolvió un error (400, 403, 500)
+        // Ej: {"error": "El usuario no está registrado."}
+        // Lo mostramos como un error general en el formulario
+        setErrors({ api: resultado.error || "Error al procesar la compra." });
+      } else {
+        // ¡Éxito! El backend devolvió un 200 OK
+        // Ej: {"status": "approved", ...}
+
+        // Muestra el mensaje de confirmación real
+        setOkMsg(`¡Compra confirmada! Estado: ${resultado.status}.`);
+
+        // Si el backend nos dio una URL de Mercado Pago, redirigimos
+        if (resultado.redirect_url) {
+          // Usamos un pequeño delay para que el usuario alcance a leer el msg
+          setTimeout(() => {
+            window.location.assign(resultado.redirect_url);
+          }, 1500);
+        }
+      }
+    } catch (error) {
+      // Error de red (ej. el servidor de Flask no está corriendo)
+      console.error("Error de conexión:", error);
+      setErrors({
+        api: "No se pudo conectar con el servidor. ¿Está 'api.py' ejecutándose?",
+      });
     }
   };
 
@@ -208,9 +261,20 @@ export default function SimpleForm() {
           </label>
         </fieldset>
 
+        {/* ... dentro del <form> ... */}
+
+        {/* Agrega esto antes del botón */}
+        {errors.api && (
+          <small className="err" style={{ textAlign: "center", display: "block" }}>
+            {errors.api}
+          </small>
+        )}
+
         <button className="btn" type="submit">
           Confirmar compra
         </button>
+
+        {/* ... */}
 
         {okMsg && <p className="ok">{okMsg}</p>}
       </form>

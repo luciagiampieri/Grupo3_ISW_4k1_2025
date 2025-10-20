@@ -4,12 +4,15 @@
   top: 0;
   left: 0;
   inset-inline: 0;
-  height: 80px;                 /* podés ajustar */
-  background: #0f0f12;          /* color de fondo */
-  border-bottom: 1px solid rgba(255,255,255,.08);
+  height: 80px; /* podés ajustar */
+  
+  /* 1. Fondo claro forzado (EcoHarmony) */
+  background: #96e072;
+  border-bottom: 1px solid rgba(17, 24, 39, 0.08);
+  
   z-index: 1000;
   /* efecto sutil */
-  box-shadow: 0 6px 16px rgba(0,0,0,.12);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 /* Contenedor interno */
@@ -19,13 +22,13 @@
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;      /* centra el logo; usá 'flex-start' si lo querés a la izquierda */
+  justify-content: center; /* centra el logo; usá 'flex-start' si lo querés a la izquierda */
   padding: 0 16px;
 }
 
 /* Logo */
 .nav-logo {
-  height: 80px;                 /* responde a la altura de la barra */
+  height: 80px; /* responde a la altura de la barra */
   width: auto;
   object-fit: contain;
   display: block;
@@ -37,20 +40,15 @@
   height: 64px;
 }
 
-/* Opcional: modo claro/oscuro automático si usás color-scheme */
-@media (prefers-color-scheme: light) {
-  .navbar {
-    background: #96e072;
-    border-bottom: 1px solid rgba(17,24,39,.08);
-
-}
+/* 2. Estilo .h2 movido fuera del @media */
 .h2 {
-    color: white;
-    font-size: 40px;
-    margin-right: 16px;
-    font-weight: bold;
-    text-align: left;
-    text-transform: uppercase;
-    font-family: 'Arial', sans-serif;
-    }
+  color: white; /* (Podrías cambiar esto a var(--eco-text) si querés) */
+  font-size: 40px;
+  margin-right: 16px;
+  font-weight: bold;
+  text-align: left;
+  text-transform: uppercase;
+  font-family: "Arial", sans-serif;
 }
+
+/* 3. Se eliminó el @media (prefers-color-scheme: light) */

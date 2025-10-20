@@ -1,7 +1,7 @@
-from modelos.usuario import Usuario
-from modelos.tipoEntrada import TipoEntrada
-from modelos.formaPago import FormaPago
-from modelos.detalleEntrada import DetalleEntrada
+from usuario import Usuario
+from tipoEntrada import TipoEntrada
+from formaPago import FormaPago
+from detalleEntrada import DetalleEntrada
 from datetime import date
 import smtplib
 from email.mime.text import MIMEText

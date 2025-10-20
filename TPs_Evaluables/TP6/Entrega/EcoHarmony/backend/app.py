@@ -1,6 +1,6 @@
 # quiero importar la funcion enviar_mail desde backend/modelos/entrada.py y usarla para enviar un mail de prueba
-from modelos.entrada import Entrada
-from modelos.detalleEntrada import DetalleEntrada
+from entrada import Entrada
+from detalleEntrada import DetalleEntrada
 
 
 def main():
