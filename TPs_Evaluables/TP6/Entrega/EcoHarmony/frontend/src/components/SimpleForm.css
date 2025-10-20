@@ -167,3 +167,15 @@ textarea:focus {
   color: var(--eco-muted);
   font-size: 0.9rem;
 }
+
+.subfield {
+  position: relative;
+  padding-bottom: 2.5em; 
+}
+
+.subfield .err {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}

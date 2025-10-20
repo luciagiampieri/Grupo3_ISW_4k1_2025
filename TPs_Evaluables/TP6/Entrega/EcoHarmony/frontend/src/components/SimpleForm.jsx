@@ -38,25 +38,76 @@ export default function SimpleForm() {
 
   // Mantener el arreglo de personas en sync con 'cantidad' (1..10)
   useEffect(() => {
-    let n = Number(cantidad);
-    if (!Number.isInteger(n) || n < 1) n = 1;
-    if (n > 10) n = 10;
-    if (n !== cantidad) setCantidad(n);
+  const num = Number(cantidad);
 
-    setPersonas((prev) => {
-      const copy = prev.slice(0, n);
-      while (copy.length < n) copy.push({ edad: "", pase: "regular" });
-      return copy;
+  // 1. Lógica de validación instantánea
+  if (cantidad !== "" && (!Number.isInteger(num) || num < 1 || num > 10)) {
+    // Si el campo no está vacío Y el número es inválido, muestra el error.
+    setErrors((prev) => ({
+      ...prev,
+      cantidad: "La cantidad debe ser entre 1 y 10.",
+    }));
+  } else {
+    // Si el número es válido o el campo está vacío, elimina el error.
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors.cantidad;
+      return newErrors;
     });
-  }, [cantidad]);
+  }
+
+  // 2. Lógica para mostrar los campos de los visitantes (igual que antes)
+  // Se usa una versión "segura" del número (entre 1 y 10) para no romper la UI.
+  let safeNum = num;
+  if (!Number.isInteger(safeNum) || safeNum < 1) safeNum = 1;
+  if (safeNum > 10) safeNum = 10;
+
+  setPersonas((prev) => {
+    if (prev.length === safeNum) return prev; // Evita re-renderizados innecesarios
+    const copy = prev.slice(0, safeNum);
+    while (copy.length < safeNum) copy.push({ edad: "", pase: "regular" });
+    return copy;
+  });
+}, [cantidad]); // Se ejecuta cada vez que 'cantidad' cambia
 
   const handlePersonaChange = (idx, field, value) => {
-    setPersonas((prev) => {
-      const copy = prev.map((p) => ({ ...p }));
-      copy[idx][field] = value;
-      return copy;
-    });
-  };
+  // 1. Actualiza el estado de 'personas'
+  setPersonas((prev) => {
+    const copy = prev.map((p) => ({ ...p }));
+    copy[idx][field] = value;
+    return copy;
+  });
+
+  // 2. Validación instantánea solo para el campo 'edad'
+  if (field === "edad") {
+    const edadNum = Number(value);
+    const errorKey = "edad_" + idx;
+
+    if (value === "") {
+      setErrors((prev) => ({
+        ...prev,
+        [errorKey]: "Ingresá la edad.",
+      }));
+    } else if (edadNum < 0) {
+      setErrors((prev) => ({
+        ...prev,
+        [errorKey]: "La edad no puede ser negativa.",
+      }));
+    } else if (edadNum > 121) {
+      setErrors((prev) => ({
+        ...prev,
+        [errorKey]: "La edad no puede ser mayor a 121.",
+      }));
+    } else {
+      // Si es válido, borra el error específico
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[errorKey];
+        return newErrors;
+      });
+    }
+  }
+};
 
   const validate = () => {
     const e = {};
@@ -178,7 +229,7 @@ export default function SimpleForm() {
             min={1}
             max={10}
             value={cantidad}
-            onChange={(e) => setCantidad(Number(e.target.value))}
+            onChange={(e) => setCantidad((e.target.value))}
           />
           {errors.cantidad && <small className="err">{errors.cantidad}</small>}
         </label>
@@ -206,6 +257,7 @@ export default function SimpleForm() {
                   <input
                     type="number"
                     min={0}
+                    max={121}
                     value={p.edad}
                     onChange={(e) =>
                       handlePersonaChange(i, "edad", e.target.value)
