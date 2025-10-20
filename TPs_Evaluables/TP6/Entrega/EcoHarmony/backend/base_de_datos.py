@@ -87,7 +87,12 @@ def init_db():
     try:
         cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("fachi@gmail.com",))
         cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("tici@gmail.com",))
-        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("juan@mail.com",))
+        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("juan@mail.com",)),
+        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("jpenafort13@gmail.com",)),
+        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("mickaelacrespo@gmail.com",)),
+        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("francogiorda@gmail.com",)),
+        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("manuviale123@gmail.com",)),
+        
         conn.commit()
     finally:
         conn.close()
@@ -143,6 +148,37 @@ def get_or_create_tipo_entrada(nombre: str, descripcion: Optional[str], precio: 
         return cur.lastrowid
     finally:
         conn.close()
+def get_tipo_entrada_por_nombre(nombre: str):
+    """
+    Busca en la tabla tipoEntrada por nombre y devuelve una instancia de TipoEntrada
+    (importada dinámicamente para evitar problemas de import circular).
+    Devuelve None si no se encuentra.
+    """
+    if not nombre:
+        return None
+
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute('SELECT nombre, descripcion, precio FROM tipoEntrada WHERE nombre = ?', (nombre,))
+        row = cur.fetchone()
+        if not row:
+            return None
+
+        # Import dinámico del modelo para no forzar import al cargar el módulo
+        try:
+            from modelos.tipoEntrada import TipoEntrada
+        except Exception:
+            # Si no existe el modelo, devolver un dict como fallback
+            return {
+                "nombre": row['nombre'],
+                "descripcion": row['descripcion'],
+                "precio": float(row['precio'])
+            }
+
+        return TipoEntrada(nombre=row['nombre'], descripcion=row['descripcion'], precio=float(row['precio']))
+    finally:
+        conn.close()
 
 
 def insertar_entrada(usuario_email: str, cantidad: int, fecha_visita: str, forma_pago_nombre: str, forma_pago_descripcion: Optional[str], fecha_compra: str, estado_pago: str) -> int:
@@ -172,6 +208,7 @@ def insertar_detalle(entrada_id: int, edad_visitante: int, tipo_entrada_nombre: 
         return cur.lastrowid
     finally:
         conn.close()
+
 
 
 # Inicializar la DB al importar este módulo (seguro y idempotente)

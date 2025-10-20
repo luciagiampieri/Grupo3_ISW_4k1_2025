@@ -7,6 +7,7 @@ class FormaPago:
 
     def procesar_pago(self, monto):
         # Si el pago es con tarjeta, simulamos que va a Mercado Pago
+        print( f"Procesando pago de ${monto} con {self.nombre}..." )
         if "tarjeta" in self.nombre.lower():
             estado = "approved" # Simulamos que el pago fue aprobado
             return {

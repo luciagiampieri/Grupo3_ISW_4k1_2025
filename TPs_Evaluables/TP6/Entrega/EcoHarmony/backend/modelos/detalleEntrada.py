@@ -1,4 +1,3 @@
-from tipoEntrada import TipoEntrada
 
 class DetalleEntrada:
 
