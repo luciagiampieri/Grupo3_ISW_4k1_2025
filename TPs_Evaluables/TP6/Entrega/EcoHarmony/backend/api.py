@@ -8,32 +8,24 @@ import traceback # Para ver errores detallados en la terminal
 try:
     # --- Importamos tus Modelos de Negocio ---
 # (Asumimos que están todos en la misma carpeta)
-    from usuario import Usuario
-    from tipoEntrada import TipoEntrada
-    from formaPago import FormaPago
-    from detalleEntrada import DetalleEntrada
-    from entrada import Entrada
+    from modelos.usuario import Usuario
+    from modelos.tipoEntrada import TipoEntrada
+    from modelos.formaPago import FormaPago
+    from modelos.detalleEntrada import DetalleEntrada
+    from modelos.entrada import Entrada
     import base_de_datos
 except ImportError:
     # Si no están en 'modelos', prueba importarlos directamente
-    from usuario import Usuario
-    from tipoEntrada import TipoEntrada
-    from formaPago import FormaPago
-    from detalleEntrada import DetalleEntrada
-    from entrada import Entrada
+    from modelos.usuario import Usuario
+    from modelos.tipoEntrada import TipoEntrada
+    from modelos.formaPago import FormaPago
+    from modelos.detalleEntrada import DetalleEntrada
+    from modelos.entrada import Entrada
 
 # --- Creación de la Aplicación Flask ---
 app = Flask(__name__)
 
 CORS(app)
-
-# --- Datos que simulan venir de la DB o configuración ---
-# (Los tests usaban estos precios, los replicamos aquí)
-# En una app real, esto se leería de la tabla tipoEntrada
-TIPOS_ENTRADA_DISPONIBLES = {
-    "regular": TipoEntrada(nombre="regular", descripcion="Entrada general", precio=5000),
-    "VIP": TipoEntrada(nombre="VIP", descripcion="Entrada VIP", precio=10000)
-}
 
 
 @app.route('/api/comprar', methods=['POST'])
@@ -88,17 +80,38 @@ def comprar_entrada():
         detalles_entrada_obj = []
         for detalle_data in detalles_json:
             tipo_nombre = detalle_data.get('tipo_entrada_nombre')
-            tipo_entrada_obj = TIPOS_ENTRADA_DISPONIBLES.get(tipo_nombre)
-            
-            if not tipo_entrada_obj:
+            tipo_row = base_de_datos.get_tipo_entrada_por_nombre(tipo_nombre)
+
+            if not tipo_row:
                 return jsonify({"error": f"El tipo de entrada '{tipo_nombre}' no es válido."}), 400
-            
+
+            # Normalizar lo que devuelve la función de la DB a una instancia de TipoEntrada
+            if isinstance(tipo_row, TipoEntrada):
+                tipo_entrada_obj = tipo_row
+            elif isinstance(tipo_row, dict):
+                tipo_entrada_obj = TipoEntrada(
+                    nombre=tipo_row.get('nombre', tipo_nombre),
+                    descripcion=tipo_row.get('descripcion'),
+                    precio=float(tipo_row.get('precio', 0))
+                )
+            elif isinstance(tipo_row, (int, float)):
+                # Si la función solo devuelve el precio
+                tipo_entrada_obj = TipoEntrada(nombre=tipo_nombre, descripcion=None, precio=float(tipo_row))
+            else:
+                # intento genérico (por si retorna sqlite3.Row)
+                try:
+                    nombre = tipo_row['nombre'] if 'nombre' in tipo_row else tipo_nombre
+                    precio = float(tipo_row['precio'])
+                    descripcion = tipo_row.get('descripcion', None) if hasattr(tipo_row, 'get') else None
+                    tipo_entrada_obj = TipoEntrada(nombre=nombre, descripcion=descripcion, precio=precio)
+                except Exception:
+                    return jsonify({"error": f"El tipo de entrada '{tipo_nombre}' no es válido."}), 400
+                
             detalle = DetalleEntrada(
                 edad_visitante=detalle_data.get('edad_visitante'),
                 tipo_entrada=tipo_entrada_obj #
             )
             detalles_entrada_obj.append(detalle)
-        
         cantidad = len(detalles_entrada_obj)
 
         # --- 3. Crear la instancia principal de Entrada ---

@@ -1,7 +1,3 @@
-from usuario import Usuario
-from tipoEntrada import TipoEntrada
-from formaPago import FormaPago
-from detalleEntrada import DetalleEntrada
 from datetime import date
 import smtplib
 from email.mime.text import MIMEText
