@@ -151,6 +151,25 @@ textarea:focus {
 .btn:active { transform: translateY(1px); }
 .btn:focus-visible { box-shadow: 0 0 0 4px rgba(var(--eco-ring), 0.22); }
 
+/* Botón de detalle especial */
+.btn-detail {
+  background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+  margin-top: 12px;
+  font-size: 1.05rem;
+  padding: 14px 20px;
+  box-shadow: 0 4px 12px rgba(27, 94, 32, 0.3);
+}
+
+.btn-detail:hover {
+  background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+  box-shadow: 0 6px 16px rgba(27, 94, 32, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-detail:active {
+  transform: translateY(0px);
+}
+
 /* ========== Success & Helper ========== */
 .ok {
   margin: 0;

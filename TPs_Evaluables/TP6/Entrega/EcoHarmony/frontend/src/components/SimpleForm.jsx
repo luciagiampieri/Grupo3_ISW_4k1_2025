@@ -63,7 +63,7 @@ function isTodayOrFuture(dateStr) {
   return d >= today;
 }
 
-export default function SimpleForm() {
+export default function SimpleForm({ onShowDetail }) {
   const [cantidad, setCantidad] = useState(1);
   const [fecha, setFecha] = useState("");
   const [email, setEmail] = useState("");
@@ -71,6 +71,8 @@ export default function SimpleForm() {
   const [personas, setPersonas] = useState([{ edad: "", pase: "regular" }]);
   const [errors, setErrors] = useState({});
   const [okMsg, setOkMsg] = useState("");
+  const [purchaseCompleted, setPurchaseCompleted] = useState(false);
+  const [purchaseData, setPurchaseData] = useState(null);
 
   // --- MODIFICADO: Cálculo de precios y DESGLOSE con dinero ---
   const calculoPrecios = useMemo(() => {
@@ -268,12 +270,23 @@ export default function SimpleForm() {
       if (!response.ok) {
         setErrors({ api: resultado.error || "Error al procesar la compra." });
       } else {
+        // ¡Éxito! El backend devolvió un 200 OK
+        // Ej: {"status": "approved", ...}
+
+        // Guarda los datos de la compra
+        setPurchaseData(datosCompra);
+        setPurchaseCompleted(true);
+
+        // Muestra el mensaje de confirmación real
         setOkMsg(`¡Compra confirmada! Estado: ${resultado.status}.`);
-        if (resultado.redirect_url) {
-          setTimeout(() => {
-            window.location.assign(resultado.redirect_url);
-          }, 1500);
-        }
+
+        // Si el backend nos dio una URL de Mercado Pago, redirigimos
+        // if (resultado.redirect_url) {
+        //   // Usamos un pequeño delay para que el usuario alcance a leer el msg
+        //   setTimeout(() => {
+        //     window.location.assign(resultado.redirect_url);
+        //   }, 1500);
+        // }
       }
     } catch (error) {
       console.error("Error de conexión:", error);
@@ -429,6 +442,17 @@ export default function SimpleForm() {
         </button>
 
         {okMsg && <p className="ok">{okMsg}</p>}
+        
+        {/* Botón para ver detalle si la compra fue con tarjeta y está completada */}
+        {purchaseCompleted && pago === "tarjeta" && (
+          <button 
+            className="btn btn-detail" 
+            type="button"
+            onClick={() => onShowDetail(purchaseData)}
+          >
+            Ver Detalle de Compra
+          </button>
+        )}
       </form>
 
       <p className="helper">
