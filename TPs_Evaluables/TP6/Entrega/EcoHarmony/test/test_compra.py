@@ -149,4 +149,17 @@ class TestCompra:
             assert resultado == True
 
             print("✅ Test pago con tarjeta redirige correctamente a Mercado Pago.")
+            
+      def test_pago_efectivo_no_redirige(self):
+
+            # --- Precondiciones ---
+            forma_pago = FormaPago(nombre="efectivo")
+
+            # --- Pasos del caso de prueba ---
+            resultado = forma_pago.redireccionarPago()
+
+            # --- Resultados esperados ---
+            assert resultado == False
+
+            print("✅ Test pago en efectivo no redirige pasó correctamente.")
       
