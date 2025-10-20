@@ -151,6 +151,25 @@ textarea:focus {
 .btn:active { transform: translateY(1px); }
 .btn:focus-visible { box-shadow: 0 0 0 4px rgba(var(--eco-ring), 0.22); }
 
+/* Botón de detalle especial */
+.btn-detail {
+  background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+  margin-top: 12px;
+  font-size: 1.05rem;
+  padding: 14px 20px;
+  box-shadow: 0 4px 12px rgba(27, 94, 32, 0.3);
+}
+
+.btn-detail:hover {
+  background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+  box-shadow: 0 6px 16px rgba(27, 94, 32, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-detail:active {
+  transform: translateY(0px);
+}
+
 /* ========== Success & Helper ========== */
 .ok {
   margin: 0;
@@ -178,4 +197,70 @@ textarea:focus {
   bottom: 0;
   left: 0;
   width: 100%;
+}
+
+/* ========== Precios (VERSIÓN CORREGIDA) ========== */
+
+/* Estilos para el precio individual por visitante */
+.person {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.person .inline {
+  flex-grow: 1;
+}
+.person-price {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--eco-primary);
+  padding-left: 16px;
+  min-width: 80px;
+  text-align: right;
+}
+
+/* Wrapper para el bloque de Monto Total y Desglose */
+.total-price-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; 
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 8px;
+  background: var(--eco-chip);
+  border: 1px solid var(--eco-chip-border);
+  border-radius: 12px;
+}
+
+/* Contenedor para la línea "Monto Total: $XXXX" */
+.total-price-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.total-price-header span:first-child {
+  font-size: 1.1rem;
+  color: var(--eco-text);
+  font-weight: 600;
+}
+.total-price-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--eco-primary);
+}
+
+/* Contenedor para el Desglose */
+.total-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 1px dashed var(--eco-border);
+  padding-top: 12px;
+}
+
+/* Estilo para CADA línea del desglose para que se vean iguales */
+.breakdown-line {
+  font-size: 0.9rem;
+  color: var(--eco-muted) !important;
+  font-weight: 400 !important;
 }
