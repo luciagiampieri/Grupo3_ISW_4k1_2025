@@ -1,8 +1,44 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import "./SimpleForm.css";
 
 // Cierra los LUNES (1) | 0=Dom, 1=Lun, ... 6=Sáb
 const CLOSED_WEEKDAY = 1;
+
+// --- Precios base (deben coincidir con la DB) ---
+const TICKET_PRICES = {
+  regular: 5000,
+  vip: 10000,
+};
+
+// --- Lógica de descuento (replicada de detalleEntrada.py) ---
+function calcularMontoDetalle(edadStr, pase) {
+  // Estandariza a minúsculas (ej. "VIP" -> "vip")
+  const precioBase = TICKET_PRICES[pase.toLowerCase()];
+  if (!precioBase) return 0;
+
+  const edad = Number(edadStr);
+  // No calcula si la edad está vacía o es inválida
+  if (isNaN(edad) || edadStr === "" || edad < 0 || edad > 121) {
+    return null; // 'null' para mostrar "-" en lugar de $0
+  }
+
+  // Lógica de descuento: < 10 años o > 60 años pagan 50%
+  if (edad < 10 || edad > 60) {
+    return precioBase * 0.5;
+  }
+  return precioBase;
+}
+
+// --- Helper para formatear a pesos ARS ---
+const formatCurrency = (value) => {
+  if (value === null || value === undefined) return "—"; // Guion para edades inválidas
+  return value.toLocaleString("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+};
 
 function isClosedHoliday(dateStr) {
   // Feriados fijos: 1 de enero y 25 de diciembre
@@ -36,79 +72,141 @@ export default function SimpleForm() {
   const [errors, setErrors] = useState({});
   const [okMsg, setOkMsg] = useState("");
 
-  // Mantener el arreglo de personas en sync con 'cantidad' (1..10)
-  useEffect(() => {
-  const num = Number(cantidad);
+  // --- MODIFICADO: Cálculo de precios y DESGLOSE con dinero ---
+  const calculoPrecios = useMemo(() => {
+    let total = 0;
+    
+    // Objeto para contar los tipos de entrada
+    const summary = {
+      regular_full: 0,
+      regular_half: 0,
+      vip_full: 0,
+      vip_half: 0,
+    };
+    
+    // 'detalles' será un array con el precio de cada persona
+    const detalles = personas.map((p) => {
+      const monto = calcularMontoDetalle(p.edad, p.pase);
+      
+      if (monto !== null) {
+        total += monto; // Suma al total solo si es un monto válido
+        
+        // Lógica para el desglose
+        const edad = Number(p.edad);
+        const pase = p.pase.toLowerCase(); // "regular" o "vip"
+        const hasDiscount = (edad < 10 || edad > 60);
 
-  // 1. Lógica de validación instantánea
-  if (cantidad !== "" && (!Number.isInteger(num) || num < 1 || num > 10)) {
-    // Si el campo no está vacío Y el número es inválido, muestra el error.
-    setErrors((prev) => ({
-      ...prev,
-      cantidad: "La cantidad debe ser entre 1 y 10.",
-    }));
-  } else {
-    // Si el número es válido o el campo está vacío, elimina el error.
-    setErrors((prev) => {
-      const newErrors = { ...prev };
-      delete newErrors.cantidad;
-      return newErrors;
+        if (pase === 'regular') {
+          if (hasDiscount) summary.regular_half++;
+          else summary.regular_full++;
+        } else if (pase === 'vip') {
+          if (hasDiscount) summary.vip_half++;
+          else summary.vip_full++;
+        }
+      }
+      return monto;
     });
-  }
 
-  // 2. Lógica para mostrar los campos de los visitantes (igual que antes)
-  // Se usa una versión "segura" del número (entre 1 y 10) para no romper la UI.
-  let safeNum = num;
-  if (!Number.isInteger(safeNum) || safeNum < 1) safeNum = 1;
-  if (safeNum > 10) safeNum = 10;
+    // Convertir el objeto 'summary' en un array de strings legibles
+    const breakdownLines = [];
 
-  setPersonas((prev) => {
-    if (prev.length === safeNum) return prev; // Evita re-renderizados innecesarios
-    const copy = prev.slice(0, safeNum);
-    while (copy.length < safeNum) copy.push({ edad: "", pase: "regular" });
-    return copy;
-  });
-}, [cantidad]); // Se ejecuta cada vez que 'cantidad' cambia
+    // --- Lógica para agregar los subtotales en ( ) ---
+    if (summary.regular_full > 0) {
+      const lineTotal = summary.regular_full * TICKET_PRICES.regular;
+      breakdownLines.push(
+        `${summary.regular_full} x Entrada Regular (${formatCurrency(lineTotal)})`
+      );
+    }
+    if (summary.regular_half > 0) {
+      const lineTotal = summary.regular_half * (TICKET_PRICES.regular * 0.5);
+      breakdownLines.push(
+        `${summary.regular_half} x Regular (50% OFF) (${formatCurrency(lineTotal)})`
+      );
+    }
+    if (summary.vip_full > 0) {
+      const lineTotal = summary.vip_full * TICKET_PRICES.vip;
+      breakdownLines.push(
+        `${summary.vip_full} x Entrada VIP (${formatCurrency(lineTotal)})`
+      );
+    }
+    if (summary.vip_half > 0) {
+      const lineTotal = summary.vip_half * (TICKET_PRICES.vip * 0.5);
+      breakdownLines.push(
+        `${summary.vip_half} x VIP (50% OFF) (${formatCurrency(lineTotal)})`
+      );
+    }
 
-  const handlePersonaChange = (idx, field, value) => {
-  // 1. Actualiza el estado de 'personas'
-  setPersonas((prev) => {
-    const copy = prev.map((p) => ({ ...p }));
-    copy[idx][field] = value;
-    return copy;
-  });
+    return { total, detalles, breakdown: breakdownLines };
+  }, [personas]); // Fin del useMemo
 
-  // 2. Validación instantánea solo para el campo 'edad'
-  if (field === "edad") {
-    const edadNum = Number(value);
-    const errorKey = "edad_" + idx;
 
-    if (value === "") {
+  // useEffect para 'cantidad'
+  useEffect(() => {
+    const num = Number(cantidad);
+
+    if (cantidad !== "" && (!Number.isInteger(num) || num < 1 || num > 10)) {
       setErrors((prev) => ({
         ...prev,
-        [errorKey]: "Ingresá la edad.",
-      }));
-    } else if (edadNum < 0) {
-      setErrors((prev) => ({
-        ...prev,
-        [errorKey]: "La edad no puede ser negativa.",
-      }));
-    } else if (edadNum > 121) {
-      setErrors((prev) => ({
-        ...prev,
-        [errorKey]: "La edad no puede ser mayor a 121.",
+        cantidad: "La cantidad debe ser entre 1 y 10.",
       }));
     } else {
-      // Si es válido, borra el error específico
       setErrors((prev) => {
         const newErrors = { ...prev };
-        delete newErrors[errorKey];
+        delete newErrors.cantidad;
         return newErrors;
       });
     }
-  }
-};
 
+    let safeNum = num;
+    if (!Number.isInteger(safeNum) || safeNum < 1) safeNum = 1;
+    if (safeNum > 10) safeNum = 10;
+
+    setPersonas((prev) => {
+      if (prev.length === safeNum) return prev;
+      const copy = prev.slice(0, safeNum);
+      while (copy.length < safeNum) copy.push({ edad: "", pase: "regular" });
+      return copy;
+    });
+  }, [cantidad]);
+
+  // handlePersonaChange
+  const handlePersonaChange = (idx, field, value) => {
+    setPersonas((prev) => {
+      const copy = prev.map((p) => ({ ...p }));
+      copy[idx][field] = value;
+      return copy;
+    });
+
+    if (field === "edad") {
+      const edadNum = Number(value);
+      const errorKey = "edad_" + idx;
+
+      if (value === "") {
+        setErrors((prev) => ({
+          ...prev,
+          [errorKey]: "Ingresá la edad.",
+        }));
+      } else if (edadNum < 0) {
+        setErrors((prev) => ({
+          ...prev,
+          [errorKey]: "La edad no puede ser negativa.",
+        }));
+      } else if (edadNum > 121) {
+        setErrors((prev) => ({
+          ...prev,
+          [errorKey]: "La edad no puede ser mayor a 121.",
+        }));
+      } else {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors[errorKey];
+          return newErrors;
+        });
+      }
+    }
+  };
+
+  // validate
   const validate = () => {
     const e = {};
     if (!fecha) e.fecha = "Elegí una fecha.";
@@ -127,7 +225,7 @@ export default function SimpleForm() {
     personas.forEach((p, i) => {
       if (p.edad === "" || Number(p.edad) < 0)
         e["edad_" + i] = "Edad inválida.";
-      if (!["regular", "vip"].includes(p.pase))
+      if (!["regular", "VIP"].includes(p.pase))
         e["pase_" + i] = "Seleccioná un pase.";
     });
 
@@ -135,32 +233,28 @@ export default function SimpleForm() {
     return Object.keys(e).length === 0;
   };
 
-  // Reemplaza tu handleSubmit por esta versión
+  // handleSubmit (con fix .toLowerCase())
   const handleSubmit = async (ev) => {
     ev.preventDefault();
     setOkMsg("");
-    setErrors({}); // Limpia errores previos
+    setErrors({});
 
-    // 1. Ejecuta la validación del frontend primero
     if (!validate()) {
       console.log("Error de validación del frontend.");
       return;
     }
 
-    // 2. Prepara el JSON para el backend
-    //    (Traduciendo los nombres de estado del front a los esperados por la API)
     const datosCompra = {
       usuario_email: email,
       fecha_visita: fecha,
-      forma_pago_nombre: pago, // "efectivo" o "tarjeta"
+      forma_pago_nombre: pago,
       detalles: personas.map((p) => ({
-        edad_visitante: Number(p.edad), // Aseguramos que sea número
-        tipo_entrada_nombre: p.pase, // "regular" o "vip"
+        edad_visitante: Number(p.edad),
+        tipo_entrada_nombre: p.pase.toLowerCase(), // Fix
       })),
     };
 
     try {
-      // 3. Llama a la API de Flask (¡la que creamos!)
       const response = await fetch("http://127.0.0.1:5000/api/comprar", {
         method: "POST",
         headers: {
@@ -169,32 +263,19 @@ export default function SimpleForm() {
         body: JSON.stringify(datosCompra),
       });
 
-      // 4. Obtiene la respuesta del backend
       const resultado = await response.json();
 
-      // 5. Maneja la respuesta
       if (!response.ok) {
-        // Si el backend devolvió un error (400, 403, 500)
-        // Ej: {"error": "El usuario no está registrado."}
-        // Lo mostramos como un error general en el formulario
         setErrors({ api: resultado.error || "Error al procesar la compra." });
       } else {
-        // ¡Éxito! El backend devolvió un 200 OK
-        // Ej: {"status": "approved", ...}
-
-        // Muestra el mensaje de confirmación real
         setOkMsg(`¡Compra confirmada! Estado: ${resultado.status}.`);
-
-        // Si el backend nos dio una URL de Mercado Pago, redirigimos
         if (resultado.redirect_url) {
-          // Usamos un pequeño delay para que el usuario alcance a leer el msg
           setTimeout(() => {
             window.location.assign(resultado.redirect_url);
           }, 1500);
         }
       }
     } catch (error) {
-      // Error de red (ej. el servidor de Flask no está corriendo)
       console.error("Error de conexión:", error);
       setErrors({
         api: "No se pudo conectar con el servidor. ¿Está 'api.py' ejecutándose?",
@@ -229,7 +310,7 @@ export default function SimpleForm() {
             min={1}
             max={10}
             value={cantidad}
-            onChange={(e) => setCantidad((e.target.value))}
+            onChange={(e) => setCantidad(e.target.value)}
           />
           {errors.cantidad && <small className="err">{errors.cantidad}</small>}
         </label>
@@ -277,12 +358,16 @@ export default function SimpleForm() {
                     }
                   >
                     <option value="regular">Regular</option>
-                    <option value="vip">VIP</option>
+                    <option value="VIP">VIP</option>
                   </select>
                   {errors["pase_" + i] && (
                     <small className="err">{errors["pase_" + i]}</small>
                   )}
                 </label>
+              </div>
+              {/* Muestra el precio por persona */}
+              <div className="person-price">
+                {formatCurrency(calculoPrecios.detalles[i])}
               </div>
             </div>
           ))}
@@ -313,9 +398,26 @@ export default function SimpleForm() {
           </label>
         </fieldset>
 
-        {/* ... dentro del <form> ... */}
+        {/* Muestra el Monto Total y el Desglose */}
+        <div className="total-price-wrapper">
+          {/* Sección Superior: Monto Total */}
+          <div className="total-price-header">
+            <span>Monto Total:</span>
+            <span className="total-price-amount">
+              {formatCurrency(calculoPrecios.total)}
+            </span>
+          </div>
 
-        {/* Agrega esto antes del botón */}
+          {/* Sección Inferior: Desglose (si hay items) */}
+          {calculoPrecios.breakdown.length > 0 && (
+            <div className="total-breakdown">
+              {calculoPrecios.breakdown.map((line, i) => (
+                <span key={i} className="breakdown-line">{line}</span>
+              ))}
+            </div>
+          )}
+        </div>
+
         {errors.api && (
           <small className="err" style={{ textAlign: "center", display: "block" }}>
             {errors.api}
@@ -325,8 +427,6 @@ export default function SimpleForm() {
         <button className="btn" type="submit">
           Confirmar compra
         </button>
-
-        {/* ... */}
 
         {okMsg && <p className="ok">{okMsg}</p>}
       </form>
