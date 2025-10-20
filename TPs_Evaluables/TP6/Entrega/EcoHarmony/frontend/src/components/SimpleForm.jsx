@@ -229,7 +229,7 @@ export default function SimpleForm() {
     personas.forEach((p, i) => {
       if (p.edad === "" || Number(p.edad) < 0)
         e["edad_" + i] = "Edad inválida.";
-      if (!["regular", "VIP"].includes(p.pase))
+      if (!["regular", "vip"].includes(p.pase))
         e["pase_" + i] = "Seleccioná un pase.";
     });
 
@@ -377,7 +377,7 @@ export default function SimpleForm() {
                     }
                   >
                     <option value="regular">Regular</option>
-                    <option value="VIP">VIP</option>
+                    <option value="vip">VIP</option>
                   </select>
                   {errors["pase_" + i] && (
                     <small className="err">{errors["pase_" + i]}</small>
