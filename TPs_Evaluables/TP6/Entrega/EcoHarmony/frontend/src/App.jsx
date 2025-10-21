@@ -5,6 +5,7 @@ import PurchaseDetail from './components/PurchaseDetail.jsx'
 import NavBar from './components/NavBar.jsx'
 import NavBarMP from './components/NavBarMP.jsx'
 import FakeMercadoPago from './components/FakeMercadoPago.jsx'
+import Inicio from './components/Inicio.jsx'
 
 function AppContent() {
   const location = useLocation();
@@ -14,6 +15,7 @@ function AppContent() {
     <>
       {isMercadoPago ? <NavBarMP /> : <NavBar />}
       <Routes>
+        <Route path="/inicio" element={<Inicio />} />
         <Route path="/" element={<SimpleForm />} />
         <Route path="/detalle-compra" element={<PurchaseDetail />} />
         <Route path="/fakemercadopago" element={<FakeMercadoPago />} />

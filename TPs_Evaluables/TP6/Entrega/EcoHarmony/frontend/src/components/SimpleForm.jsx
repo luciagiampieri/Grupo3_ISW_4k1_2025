@@ -465,7 +465,8 @@ export default function SimpleForm() {
       </form>
 
       <p className="helper">
-        EcoHarmony - Parque Natural. Abierto todos los días excepto los lunes.
+        EcoHarmony - Parque Natural<br />
+        Abierto todos los días excepto los lunes.
         <br />
         Feriados cerrados: 1 de enero y 25 de diciembre.
       </p>

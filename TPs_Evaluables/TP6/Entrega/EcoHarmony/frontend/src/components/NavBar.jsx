@@ -1,16 +1,25 @@
 import "./NavBar.css";
-import logo from "../assets/logo.png"; // reemplazá por tu archivo
+import logo from "../assets/logo.png";
+
+import { Link } from 'react-router-dom';
 
 export default function NavBar() {
   return (
     <>
-      <header className="navbar">
+      <nav className="navbar">
         <div className="nav-inner">
-          <h2>EcoHarmony</h2>
-          <img src={logo} alt="Logo" className="nav-logo" />
+          <div className="nav-brand">
+            <img src={logo} alt="EcoHarmony Logo" className="nav-logo" />
+            <h2 className="nav-title">EcoHarmony</h2>
+          </div>
+
+          <div className="nav-links">
+            <Link to="/inicio">Inicio</Link>
+            <Link to="/">Comprar</Link>
+          </div>
         </div>
-      </header>
-      {/* Espaciador para que el contenido no quede debajo de la navbar fija */}
+      </nav>
+
       <div className="navbar-spacer" />
     </>
   );
