@@ -1,16 +1,57 @@
 # React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este proyecto utiliza el entorno React + Vite para el desarrollo del frontend de EcoHarmony, un parque que promueve la sustentabilidad y la educación ambiental.
+El template base de Vite ofrece un entorno ligero y rápido, con compatibilidad para HMR (Hot Module Replacement) y reglas de ESLint integradas.
 
-Currently, two official plugins are available:
+Actualmente, dos plugins oficiales están disponibles:
+    @vitejs/plugin-react: usa Babel (o oxc con rolldown-vite) para Fast Refresh.
+    @vitejs/plugin-react-swc: utiliza SWC para Fast Refresh con mayor rendimiento.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Nota: El compilador de React no está habilitado en esta plantilla debido a su impacto en el rendimiento de desarrollo y build.
+Para habilitarlo, consultar la documentación oficial.
 
-## React Compiler
+# Estructura del proyecto
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+El frontend está organizado modularmente, siguiendo buenas prácticas de separación entre componentes, estilos y recursos visuales.
 
-## Expanding the ESLint configuration
+frontend/
+│
+├── index.html             # Archivo principal del proyecto
+├── package.json           # Dependencias y scripts del proyecto
+├── vite.config.js         # Configuración del entorno Vite
+├── README.md              # Documentación del frontend
+│
+├── public/                # Recursos estáticos accesibles directamente
+│   ├── logo1.png
+│   └── vite.svg
+│
+└── src/                   # Código fuente principal
+    ├── App.jsx            # Componente raíz del proyecto
+    ├── main.jsx           # Punto de entrada de React
+    ├── index.css / App.css# Estilos globales
+    │
+    ├── assets/            # Imágenes y recursos visuales
+    │   ├── logo.png
+    │   ├── mercadopago_bg_removed_outer.png
+    │   └── react.svg
+    │
+    └── components/        # Componentes modulares de la interfaz
+        ├── FakeMercadoPago.*   # Simulación de pasarela de pago
+        ├── NavBar.*            # Barra de navegación principal
+        ├── NavBarMP.*          # Versión adaptada para la vista de pago
+        ├── PurchaseDetail.*    # Muestra detalles de la compra
+        └── SimpleForm.*        # Formulario de registro y selección de entradas
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Observaciones técnicas
+
+El proyecto utiliza Vite como bundler, optimizando tiempos de carga y desarrollo.
+
+Cada componente tiene su propio archivo .jsx y .css, facilitando la mantenibilidad y la lectura del código.
+
+El componente FakeMercadoPago simula el flujo de pago, permitiendo realizar pruebas sin conexión real a una pasarela externa.
+
+NavBar y NavBarMP gestionan la navegación principal y la vista de pago respectivamente.
+
+Se recomienda mantener una clara separación entre componentes, recursos (assets) y estilos para garantizar la escalabilidad.
+
+Las imágenes (logo.png, mercadopago_bg_removed_outer.png) pueden reemplazarse por versiones definitivas antes del despliegue final.
