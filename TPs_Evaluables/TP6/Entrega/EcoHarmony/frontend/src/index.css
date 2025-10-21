@@ -1,17 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* EcoHarmony Official Palette */
+  --eco-dark: #134611;
+  --eco-medium: #3E8914;
+  --eco-bright: #3DA35D;
+  --eco-light: #96E072;
+  --eco-bg: #E8FCCF;
+
+  /* Typography */
+  font-family: 'Montserrat', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  /* 1. Forzamos el modo claro */
+  /* Color scheme */
   color-scheme: light;
-  color: #213547;
-  background-color: #ffffff;
+  color: var(--eco-dark);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body, h1, h2, h3, button, input {
+  font-family: 'Montserrat', sans-serif;
 }
 
 a {
@@ -29,6 +42,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background: var(--eco-bg);
 }
 
 h1 {
@@ -42,7 +56,6 @@ button {
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
-  font-family: inherit;
   background-color: #f9f9f9;
   cursor: pointer;
   transition: border-color 0.25s;
@@ -55,10 +68,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-
-:root { --eco-page: #E8FCCF; }
 html, body, #root {
   min-height: 100%;
   margin: 0;
 }
-body { background: var(--eco-page); }
