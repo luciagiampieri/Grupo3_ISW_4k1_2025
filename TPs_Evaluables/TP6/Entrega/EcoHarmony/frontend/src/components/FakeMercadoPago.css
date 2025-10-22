@@ -1,95 +1,75 @@
+/* Fondo y estructura general */
 .mp-wrapper {
   min-height: 100vh;
   background: linear-gradient(135deg, #009ee3 0%, #0084d7 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 2rem 1rem;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .mp-container {
-  max-width: 800px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 700px;
 }
 
-.mp-card {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 84, 215, 0.3);
-  padding: 2.5rem;
-  margin-bottom: 2rem;
-}
-
+/* Encabezado */
 .mp-header {
   text-align: center;
-  margin-bottom: 2rem;
-  padding-bottom: 2rem;
-  border-bottom: 2px solid #e3f0ff;
+  margin-bottom: 1.5rem;
 }
 
 .mp-logo {
   width: 180px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .mp-title {
-  color: #009ee3;
+  color: #ffffff;
   font-size: 2rem;
-  margin-bottom: 0.75rem;
   font-weight: 700;
+  margin-bottom: 0.5rem;
 }
 
 .mp-desc {
-  color: #0084d7;
-  font-size: 1.15rem;
+  color: #e3f2fd;
+  font-size: 1.1rem;
   line-height: 1.6;
 }
 
-.mp-info-section {
-  background: #e3f0ff;
-  padding: 1.5rem;
-  border-radius: 12px;
-  margin-bottom: 2rem;
+/* Card principal */
+.mp-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 84, 215, 0.3);
+  padding: 2rem;
 }
 
-.mp-info-section h3 {
+.mp-card h2 {
   color: #0084d7;
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-  font-weight: 600;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  border-bottom: 2px solid #e3f0ff;
+  padding-bottom: 0.5rem;
 }
 
+/* Info items */
 .mp-info-item {
   display: flex;
   justify-content: space-between;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #bbdefb;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #e3f0ff;
 }
 
 .mp-info-item:last-child {
   border-bottom: none;
 }
 
-.mp-total-item {
-  background: linear-gradient(135deg, #009ee3 0%, #0084d7 100%);
-  margin: 1rem -1.5rem -1.5rem -1.5rem;
-  padding: 1.25rem 1.5rem !important;
-  border-radius: 0 0 12px 12px;
-  border-bottom: none !important;
-}
-
-.mp-total-item .mp-info-label {
-  color: #fff;
-  font-size: 1.2rem;
-  font-weight: 700;
-}
-
-.mp-total-item .mp-total-value {
-  color: #fff;
-  font-size: 1.8rem;
-  font-weight: 800;
-}
-
 .mp-info-label {
   color: #555;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .mp-info-value {
@@ -97,6 +77,30 @@
   font-weight: 600;
 }
 
+/* Total destacado */
+.mp-total-item {
+  background: linear-gradient(135deg, #009ee3 0%, #0084d7 100%);
+  border-radius: 12px;
+  margin-top: 1.2rem;
+  padding: 1rem 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mp-total-item .mp-info-label {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.mp-total-value {
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+/* Botones */
 .mp-actions {
   display: flex;
   gap: 1rem;
@@ -108,7 +112,7 @@
   padding: 1rem;
   border: none;
   border-radius: 10px;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -137,6 +141,7 @@
   transform: translateY(-2px);
 }
 
+/* Mensaje de seguridad */
 .mp-security-note {
   background: #fff3cd;
   border: 1px solid #ffc107;
@@ -153,13 +158,14 @@
   line-height: 1.5;
 }
 
+/* Responsive */
 @media (max-width: 640px) {
   .mp-card {
     padding: 1.5rem;
   }
 
   .mp-title {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 
   .mp-desc {

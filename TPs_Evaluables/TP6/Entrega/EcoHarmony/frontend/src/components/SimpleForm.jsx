@@ -288,9 +288,14 @@ export default function SimpleForm() {
         if (datosCompra.forma_pago_nombre === 'tarjeta') {
           // Guardar datos en sessionStorage para acceder desde la otra ruta
           sessionStorage.setItem('purchaseData', JSON.stringify(datosCompra));
-          setTimeout(() => {
-            navigate('/fakemercadopago');
-          }, 500);
+          navigate('/fakemercadopago'); // 🔹 redirección inmediata, sin delay
+        } else {
+          // 💵 Si es efectivo, se envía mail directamente
+          await fetch('http://127.0.0.1:5000/api/enviar_mail', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datosCompra),
+          });
         }
       }
 
