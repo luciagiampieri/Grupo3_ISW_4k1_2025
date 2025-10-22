@@ -178,50 +178,6 @@ class Entrada:
         return html_body
 
 
-    """def procesar_pago(self):
-
-        monto = self.monto_total()
-        pago = self.forma_pago.procesar_pago(monto)
-        self.estado_pago = pago["status"]
-
-        # 🔸 Si el pago fue aprobado, guardamos el monto pagado. Si no, 0.
-        if pago["status"] == "approved":
-            self.monto_total_pagado = self.monto_total()
-        else:
-            self.monto_total_pagado = 0
-
-        # --- 🔸 Guardar siempre la compra en la base de datos ---
-        try:
-            entrada_id = base_de_datos.insertar_entrada(
-                usuario_email=self.usuario.mail,
-                cantidad=self.cantidad,
-                fecha_visita=str(self.fecha_visita),
-                forma_pago_nombre=self.forma_pago.nombre if hasattr(self.forma_pago, 'nombre') else str(self.forma_pago),
-                forma_pago_descripcion=getattr(self.forma_pago, 'descripcion', None),
-                fecha_compra=str(self.fecha_compra),
-                estado_pago=self.estado_pago
-            )
-
-            # Insertar cada detalle asociado
-            for detalle in self.detalles_entrada:
-                tipo = detalle.tipo_entrada
-                base_de_datos.insertar_detalle(
-                    entrada_id=entrada_id,
-                    edad_visitante=detalle.edad_visitante,
-                    tipo_entrada_nombre=getattr(tipo, 'nombre', str(tipo)),
-                    tipo_entrada_descripcion=getattr(tipo, 'descripcion', None),
-                    tipo_entrada_precio=getattr(tipo, 'precio', float(getattr(tipo, 'precio', 0)))
-                )
-
-            print(f"💾 Compra registrada en la base de datos (ID: {entrada_id})")
-
-        except Exception as e:
-            print(f"⚠️ Error al persistir en DB: {e}")
-
-        # Devuelve el resultado del pago (para el frontend)
-        return pago"""
-
-
     def procesar_pago(self):
         """
         Procesa el pago (simulación) y devuelve el estado.

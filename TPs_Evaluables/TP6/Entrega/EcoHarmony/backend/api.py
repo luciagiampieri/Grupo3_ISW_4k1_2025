@@ -33,6 +33,7 @@ CORS(app)
 
 @app.route('/api/comprar', methods=['POST'])
 def comprar_entrada():
+    
     """
     Endpoint para procesar una nueva compra de entradas.
     Espera un JSON con:
@@ -313,64 +314,6 @@ def enviar_mail():
     except Exception as e:
         traceback.print_exc()
         return jsonify({"error": f"Error al enviar el correo: {str(e)}"}), 500
-
-
-"""@app.route('/api/confirmar_pago', methods=['POST'])
-def confirmar_pago():
-    try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "No se recibieron datos"}), 400
-
-        usuario = Usuario(mail=data["usuario_email"])
-        forma_pago = FormaPago(nombre=data["forma_pago_nombre"])
-        detalles = [
-            DetalleEntrada(
-                edad_visitante=d["edad_visitante"],
-                tipo_entrada=TipoEntrada(nombre=d["tipo_entrada_nombre"], precio=d["precio"])
-            )
-            for d in data["detalles"]
-        ]
-
-        entrada = Entrada(
-            usuario=usuario,
-            cantidad=len(detalles),
-            fecha_visita=datetime.strptime(data["fecha_visita"], "%Y-%m-%d").date(),
-            forma_pago=forma_pago,
-            detalles_entrada=detalles
-        )
-
-        # Procesa el pago simulado
-        pago = entrada.procesar_pago()
-
-        # Solo guarda si el pago fue aprobado
-        if pago["status"] == "approved":
-            entrada_id = base_de_datos.insertar_entrada(
-                usuario_email=usuario.mail,
-                cantidad=entrada.cantidad,
-                fecha_visita=str(entrada.fecha_visita),
-                forma_pago_nombre=forma_pago.nombre,
-                forma_pago_descripcion=forma_pago.descripcion if hasattr(forma_pago, "descripcion") else None,
-                fecha_compra=str(entrada.fecha_compra),
-                estado_pago=entrada.estado_pago
-            )
-
-            for detalle in detalles:
-                tipo = detalle.tipo_entrada
-                base_de_datos.insertar_detalle(
-                    entrada_id=entrada_id,
-                    edad_visitante=detalle.edad_visitante,
-                    tipo_entrada_nombre=tipo.nombre,
-                    tipo_entrada_precio=tipo.precio
-                )
-
-            print(f"💾 Compra registrada en la base de datos (ID: {entrada_id})")
-
-        return jsonify({"status": pago["status"]}), 200
-
-    except Exception as e:
-        traceback.print_exc()
-        return jsonify({"error": f"Error al confirmar pago: {str(e)}"}), 500"""
 
 
 # --- Punto de entrada para ejecutar el servidor ---
