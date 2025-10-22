@@ -16,9 +16,21 @@ export default function FakeMercadoPago() {
     setPurchaseData(JSON.parse(storedData));
   }, [navigate]);
 
-  const handleConfirm = () => {
-    navigate("/detalle-compra");
+  const handleConfirm = async () => {
+    try {
+      // 💳 Envía el mail al confirmar pago
+      await fetch('http://127.0.0.1:5000/api/enviar_mail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(purchaseData),
+      });
+    } catch (error) {
+      console.error("Error al enviar el mail:", error);
+    }
+
+    navigate('/detalle-compra');
   };
+
 
   const handleCancel = () => {
     sessionStorage.removeItem("purchaseData");

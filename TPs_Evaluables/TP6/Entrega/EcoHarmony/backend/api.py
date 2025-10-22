@@ -149,6 +149,31 @@ def comprar_entrada():
         return jsonify({"error": "Ocurrió un error interno en el servidor."}), 500
 
 
+@app.route('/api/enviar_mail', methods=['POST'])
+def enviar_mail():
+    """Simula el envío de un mail de confirmación."""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No se recibieron datos"}), 400
+
+        email = data.get("usuario_email")
+        forma_pago = data.get("forma_pago_nombre")
+        total = data.get("total")
+        fecha = data.get("fecha_visita")
+
+        # Simulación del envío real de mail
+        print("📧 Enviando mail a:", email)
+        print(f"Forma de pago: {forma_pago} | Total: {total} | Fecha: {fecha}")
+        print("✅ Mail enviado correctamente")
+
+        return jsonify({"message": "Correo enviado correctamente"}), 200
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": "Error al enviar el correo"}), 500
+
+
 # --- Punto de entrada para ejecutar el servidor ---
 if __name__ == '__main__':
     # init_db() # Si necesitas asegurar que la DB se inicie (aunque base_de_datos.py ya lo hace)
