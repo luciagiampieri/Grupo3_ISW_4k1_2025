@@ -50,6 +50,7 @@ body {
   background-size: cover;        /* hace que cubra toda la pantalla */
   background-position: center;   /* centra la imagen */
   background-repeat: no-repeat;  /* evita que se repita */
+  background-attachment: fixed; /* fija la imagen al hacer scroll */
 }
 
 
