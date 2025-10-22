@@ -7,6 +7,7 @@ Consiste en una aplicación web que integra un **backend en Flask (Python)** y u
 
 ## 📁 Estructura del proyecto
 
+```
 EcoHarmony/
 │
 ├── backend/ → API REST con Flask + SQLite
@@ -15,6 +16,7 @@ EcoHarmony/
 │
 └── frontend/ → Interfaz web con React + Vite
 └── src/components/ → Componentes principales
+```
 
 ---
 
