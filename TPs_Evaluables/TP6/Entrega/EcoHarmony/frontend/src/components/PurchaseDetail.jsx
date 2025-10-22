@@ -53,7 +53,7 @@ export default function PurchaseDetail() {
       <div className="detail-wrapper">
         <div className="card">
           <p className="err">{error || "No hay datos de compra"}</p>
-          <button className="btn" onClick={() => navigate('/')}>
+          <button className="btn" onClick={() => navigate('/form')}>
             Volver
           </button>
         </div>
@@ -125,7 +125,7 @@ export default function PurchaseDetail() {
         <div className="detail-actions">
           <button className="btn btn-primary" onClick={() => {
             sessionStorage.removeItem('purchaseData');
-            navigate('/');
+            navigate('/form');
           }}>
             Nueva Compra
           </button>

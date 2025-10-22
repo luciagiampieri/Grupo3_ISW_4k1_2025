@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+# base de datos
+*.sqlite
+*.sqlite3

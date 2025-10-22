@@ -42,8 +42,16 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background: var(--eco-bg);
+
+  /* 💚 Fondo con tu imagen */
+  background: 
+    linear-gradient(rgba(232, 252, 207, 0.7), rgba(150, 224, 114, 0.5)), /* capa verde suave */
+    url('./assets/tatuss.png'); /* ruta relativa */
+  background-size: cover;        /* hace que cubra toda la pantalla */
+  background-position: center;   /* centra la imagen */
+  background-repeat: no-repeat;  /* evita que se repita */
 }
+
 
 h1 {
   font-size: 3.2em;

@@ -14,8 +14,8 @@ export default function NavBar() {
           </div>
 
           <div className="nav-links">
-            <Link to="/inicio">Inicio</Link>
-            <Link to="/">Comprar</Link>
+            <Link to="/">Inicio</Link>
+            <Link to="/form">Comprar</Link>
           </div>
         </div>
       </nav>

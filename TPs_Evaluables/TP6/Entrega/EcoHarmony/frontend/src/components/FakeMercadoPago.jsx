@@ -11,7 +11,7 @@ export default function FakeMercadoPago() {
     const storedData = sessionStorage.getItem('purchaseData');
     if (!storedData) {
       // Si no hay datos, redirigir al formulario
-      navigate('/');
+      navigate('/form');
       return;
     }
     setPurchaseData(JSON.parse(storedData));
@@ -24,7 +24,7 @@ export default function FakeMercadoPago() {
 
   const handleCancel = () => {
     sessionStorage.removeItem('purchaseData');
-    navigate('/');
+    navigate('/form');
   };
 
   if (!purchaseData) {

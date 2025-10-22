@@ -4,13 +4,13 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 70px;
-  background: var(--eco-light); /* verde claro */
+  height: 72px;
+  background: linear-gradient(90deg, var(--eco-light) 0%, #b5f28c 100%);
   border-bottom: 2px solid var(--eco-medium);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
   z-index: 1000;
   backdrop-filter: blur(6px);
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 /* === CONTENEDOR INTERNO === */
@@ -21,36 +21,47 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
+  padding: 0 40px;
 }
 
 /* === LOGO Y TÍTULO === */
 .nav-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+  transition: transform 0.3s ease;
+}
+
+.nav-brand:hover {
+  transform: scale(1.03);
 }
 
 .nav-logo {
-  height: 48px;
+  height: 50px;
   width: auto;
   object-fit: contain;
   user-select: none;
+  transition: transform 0.3s ease;
+}
+
+.nav-logo:hover {
+  transform: rotate(-3deg) scale(1.05);
 }
 
 .nav-title {
   font-family: 'Poppins', sans-serif;
-  font-size: 1.8rem;
+  font-size: 1.9rem;
   font-weight: 700;
   color: var(--eco-dark);
   letter-spacing: 1px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 /* === LINKS DE NAVEGACIÓN === */
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 28px;
 }
 
 .nav-links a {
@@ -58,18 +69,25 @@
   font-weight: 600;
   color: var(--eco-dark);
   font-family: 'Montserrat', sans-serif;
-  transition: all 0.2s ease;
-  padding: 8px 14px;
-  border-radius: 8px;
+  transition: all 0.25s ease;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: transparent;
 }
 
 .nav-links a:hover {
-  background: var(--eco-bg); /* tono más claro del verde */
+  background: var(--eco-bg);
   color: var(--eco-medium);
-  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(62, 137, 20, 0.25);
+  transform: translateY(-2px);
+}
+
+/* Efecto al hacer clic */
+.nav-links a:active {
+  transform: scale(0.97);
 }
 
 /* Espaciador del alto de la barra */
 .navbar-spacer {
-  height: 70px;
+  height: 72px;
 }

@@ -152,6 +152,8 @@ def get_or_create_tipo_entrada(nombre: str, descripcion: Optional[str], precio: 
         return cur.lastrowid
     finally:
         conn.close()
+
+        
 def get_tipo_entrada_por_nombre(nombre: str):
     """
     Busca en la tabla tipoEntrada por nombre y devuelve una instancia de TipoEntrada

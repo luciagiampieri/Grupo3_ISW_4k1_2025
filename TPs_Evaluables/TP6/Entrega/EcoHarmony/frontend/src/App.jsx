@@ -15,8 +15,8 @@ function AppContent() {
     <>
       {isMercadoPago ? <NavBarMP /> : <NavBar />}
       <Routes>
-        <Route path="/inicio" element={<Inicio />} />
-        <Route path="/" element={<SimpleForm />} />
+        <Route path="/" element={<Inicio />} />
+        <Route path="/form" element={<SimpleForm />} />
         <Route path="/detalle-compra" element={<PurchaseDetail />} />
         <Route path="/fakemercadopago" element={<FakeMercadoPago />} />
       </Routes>
