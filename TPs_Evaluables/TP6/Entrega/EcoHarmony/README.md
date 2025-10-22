@@ -24,9 +24,10 @@ EcoHarmony/
 1. Abrí una terminal en la carpeta `backend`.
 2. Asegurate de tener Python 3.12 o superior instalado.
 3. Instalá las dependencias necesarias:
-pip install flask
-4. Iniciá el servidor:
-python api.py
+>>> pip install flask
+4. Iniciá el servidor: 
+>>> python api.py
+
 La API se ejecutará en:
 http://127.0.0.1:5000
 
@@ -39,12 +40,14 @@ npm run dev
 4. Accedé desde el navegador al enlace que muestra la consola (por defecto suele ser): http://localhost:5173
 
 🧠 Tecnologías principales
+
     Frontend: React (Vite), HTML, CSS, JavaScript (ES6)
     Backend: Python, Flask, SQLite
     Testing: pytest (en backend)
     Control de versiones: Git / GitHub
 
 ⚙️ Notas
+
     El archivo ecoharmony.db contiene datos de prueba locales.
     No se requiere conexión externa a internet para el backend.
     En caso de error de conexión entre frontend y backend, verificá que ambos servidores estén corriendo simultáneamente.

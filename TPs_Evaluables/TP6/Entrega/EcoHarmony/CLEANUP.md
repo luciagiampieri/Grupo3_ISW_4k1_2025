@@ -8,30 +8,32 @@ Esta guía permite eliminar archivos innecesarios o pesados que pueden generar c
 
 ### En `backend/`
 
-- `__pycache__/` → elimina los archivos compilados de Python (`*.pyc`):  find . -type d -name "__pycache__" -exec rm -r {} +
+- `__pycache__/` → elimina los archivos compilados de Python (`*.pyc`).
 
-Archivos temporales de base de datos: Si necesitás reiniciar la base, podés borrar ecoharmony.db (⚠️ elimina todos los registros).
+- Archivos temporales de base de datos: Si necesitás reiniciar la base, podés borrar ecoharmony.db (⚠️ elimina todos los registros).
 
-Archivos de pruebas antiguos: test_compra.py solo es necesario para testing, puede excluirse antes de empaquetar.
+- Archivos de pruebas antiguos: test_compra.py solo es necesario para testing, puede excluirse antes de empaquetar.
 
 ### En `frontend/`
 
-node_modules/ → carpeta pesada que puede regenerarse con: npm install
+- node_modules/ → carpeta pesada que puede regenerarse con: npm install
 
-Archivos de caché:
-    .vite/ (si existe)
-    .eslintcache o similares
+- Archivos de caché:
 
-Archivos de compilación temporal (si hiciste npm run build):
-    dist/ puede eliminarse si no se usa en producción.
+        .vite/ (si existe)
+        .eslintcache o similares
 
-⚙️ Limpieza rápida (Windows PowerShell)
+- Archivos de compilación temporal (si hiciste npm run build):
+        
+        dist/ puede eliminarse si no se usa en producción.
+
+## ⚙️ Limpieza rápida (Windows PowerShell)
 
 Ejecutá desde la raíz del proyecto:
 
     Remove-Item -Recurse -Force backend\__pycache__, backend\modelos\__pycache__, frontend\node_modules, frontend\dist
 
-✅ Recomendaciones
+## ✅ Recomendaciones
 
 Hacer limpieza antes de comprimir o subir el proyecto a GitHub.
 
