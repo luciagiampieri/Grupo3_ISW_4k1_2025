@@ -27,3 +27,5 @@ dist-ssr
 # base de datos
 *.sqlite
 *.sqlite3
+
+node_modules/

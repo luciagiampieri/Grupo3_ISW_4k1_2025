@@ -39,7 +39,7 @@ def init_db():
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS tipoEntrada (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre TEXT NOT NULL,
+        nombre TEXT NOT NULL UNIQUE,
         descripcion TEXT,
         precio REAL NOT NULL
     );
@@ -49,7 +49,7 @@ def init_db():
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS formaPago (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre TEXT NOT NULL,
+        nombre TEXT NOT NULL UNIQUE,
         descripcion TEXT
     );
     ''')
@@ -85,18 +85,20 @@ def init_db():
     # insertar con OR IGNORE; esto es seguro tanto si la DB se creó ahora como
     # si ya existía pero faltaban registros.
     try:
-        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("fachi@gmail.com",))
-        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("tici@gmail.com",))
-        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("juan@mail.com",)),
-        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("jpenafort13@gmail.com",)),
-        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("mickaelacrespo@gmail.com",)),
+        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("jpenafort13@gmail.com",))
+        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("mickaelacrespo@gmail.com",))
         cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("francogiorda@gmail.com",))
         cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("manuviale123@gmail.com",))
         cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("luciagiampieri24@gmail.com",))
-        cursor.execute('INSERT INTO tipoEntrada (nombre, descripcion, precio) VALUES (?, ?, ?)', ("regular", "Entrada regular", 5000))
-        cursor.execute('INSERT INTO tipoEntrada (nombre, descripcion, precio) VALUES (?, ?, ?)', ("vip", "Entrada VIP", 10000))
-        cursor.execute('INSERT INTO formaPago (nombre, descripcion) VALUES (?, ?)', ("efectivo", "Pago en efectivo"))
-        cursor.execute('INSERT INTO formaPago (nombre, descripcion) VALUES (?, ?)', ("tarjeta", "Pago con tarjeta"))
+        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("fatimachialva@gmail.com",))
+        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("ticii.gatica@gmail.com",))
+        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("candelapaez62@mail.com",))
+        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("jsbarbera4@gmail.com",))
+        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("abdalavaleria@gmail.com",))
+        cursor.execute('INSERT OR IGNORE INTO tipoEntrada (nombre, descripcion, precio) VALUES (?, ?, ?)', ("regular", "Entrada regular", 5000))
+        cursor.execute('INSERT OR IGNORE INTO tipoEntrada (nombre, descripcion, precio) VALUES (?, ?, ?)', ("vip", "Entrada VIP", 10000))
+        cursor.execute('INSERT OR IGNORE INTO formaPago (nombre, descripcion) VALUES (?, ?)', ("efectivo", "Pago en efectivo"))
+        cursor.execute('INSERT OR IGNORE INTO formaPago (nombre, descripcion) VALUES (?, ?)', ("tarjeta", "Pago con tarjeta"))
         conn.commit()
     finally:
         conn.close()
