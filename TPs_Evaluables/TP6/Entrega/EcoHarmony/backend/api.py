@@ -1,3 +1,6 @@
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime
@@ -70,7 +73,8 @@ def comprar_entrada():
 
         # 2c. Crear Forma de Pago
         forma_pago_nombre = data.get('forma_pago_nombre', 'tarjeta')
-        forma_pago = FormaPago(nombre=forma_pago_nombre, descripcion=f"Pago con {forma_pago_nombre}") #
+        forma_pago = FormaPago(nombre=data["forma_pago_nombre"], descripcion=f"Pago con {data['forma_pago_nombre']}")
+
 
         # 2d. Crear Detalles de Entradas
         detalles_json = data.get('detalles')
@@ -149,9 +153,87 @@ def comprar_entrada():
         return jsonify({"error": "Ocurrió un error interno en el servidor."}), 500
 
 
+@app.route('/api/confirmar_pago', methods=['POST'])
+def confirmar_pago():
+    """
+    Confirma el pago (tarjeta o efectivo) y guarda la compra en la base de datos.
+    Solo se ejecuta cuando el pago fue confirmado en el frontend.
+    """
+    try:
+        data = request.get_json()
+
+        print("🟡 Datos recibidos en /api/confirmar_pago:")
+        print(data)
+        print("📍 Ruta DB:", base_de_datos.DB_PATH)
+
+        if not data:
+            return jsonify({"error": "No se recibieron datos"}), 400
+
+        usuario = Usuario(mail=data["usuario_email"])
+        forma_pago = FormaPago(nombre=data["forma_pago_nombre"], descripcion=f"Pago con {data['forma_pago_nombre']}")
+        detalles = [
+            DetalleEntrada(
+                edad_visitante=d["edad_visitante"],
+                tipo_entrada = TipoEntrada(
+                    nombre=d["tipo_entrada_nombre"],
+                    descripcion=f"Entrada {d['tipo_entrada_nombre']}",
+                    precio=d["precio"]
+                )
+            )
+            for d in data["detalles"]
+        ]
+
+        entrada = Entrada(
+            usuario=usuario,
+            cantidad=len(detalles),
+            fecha_visita=datetime.strptime(data["fecha_visita"], "%Y-%m-%d").date(),
+            forma_pago=forma_pago,
+            detalles_entrada=detalles
+        )
+
+        # Procesar pago (simulación)
+        pago = entrada.procesar_pago()
+
+        print("🟢 Resultado de procesar_pago:", pago)  # ✅ ahora sí
+
+        if pago["status"] == "approved":
+
+            print("⚙️ Entrando al bloque de guardado (pago aprobado)")
+            print(f"➡️ Usuario: {usuario.mail} | Fecha: {entrada.fecha_visita} | Cantidad: {entrada.cantidad}")
+
+            entrada_id = base_de_datos.insertar_entrada(
+                usuario_email=usuario.mail,
+                cantidad=entrada.cantidad,
+                fecha_visita=str(entrada.fecha_visita),
+                forma_pago_nombre=forma_pago.nombre,
+                forma_pago_descripcion=getattr(forma_pago, "descripcion", None),
+                fecha_compra=str(entrada.fecha_compra),
+                estado_pago="approved"
+            )
+
+            for detalle in detalles:
+                tipo = detalle.tipo_entrada
+                base_de_datos.insertar_detalle(
+                    entrada_id=entrada_id,
+                    edad_visitante=detalle.edad_visitante,
+                    tipo_entrada_nombre=tipo.nombre,
+                    tipo_entrada_descripcion=getattr(tipo, "descripcion", None),  # 👈 agregado
+                    tipo_entrada_precio=tipo.precio
+            )
+
+
+            print(f"💾 Compra confirmada y guardada en la base de datos (ID: {entrada_id})")
+
+        return jsonify({"status": pago["status"]}), 200
+
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/api/enviar_mail', methods=['POST'])
 def enviar_mail():
-    """Simula el envío de un mail de confirmación."""
+    """Envía el correo real de confirmación de compra."""
     try:
         data = request.get_json()
         if not data:
@@ -161,17 +243,134 @@ def enviar_mail():
         forma_pago = data.get("forma_pago_nombre")
         total = data.get("total")
         fecha = data.get("fecha_visita")
+        detalles = data.get("detalles", [])
 
-        # Simulación del envío real de mail
-        print("📧 Enviando mail a:", email)
-        print(f"Forma de pago: {forma_pago} | Total: {total} | Fecha: {fecha}")
-        print("✅ Mail enviado correctamente")
+        # --------------- CONFIGURACIÓN DEL CORREO ---------------
+        remitente = "ecoharmonyparque@gmail.com"
+        contraseña = "nujk erab chhu bous"  # tu contraseña de aplicación
+        asunto = "Confirmación de compra en EcoHarmony"
 
+        # ----- Generar cuerpo de texto -----
+        cuerpo_texto = (
+            f"Hola {email},\n\n"
+            f"Tu compra fue confirmada exitosamente.\n"
+            f"Método de pago: {forma_pago.capitalize()}\n"
+            f"Monto total: ${total}\n"
+            f"Fecha de visita: {fecha}\n\n"
+            "¡Gracias por tu compra y que disfrutes tu visita!"
+        )
+
+        # ----- Generar cuerpo HTML (idéntico al de Entrada) -----
+        ECO_DARK = "#134611"
+        ECO_MEDIUM = "#3E8914"
+        ECO_BRIGHT = "#3DA35D"
+        ECO_LIGHT = "#96E072"
+        ECO_BG = "#E8FCCF"
+
+        detalles_html = "".join(
+            f'<li>Tipo: {d.get("tipo_entrada_nombre", "").capitalize()}, '
+            f'Edad: {d.get("edad_visitante", "-")}, '
+            f'Precio: ${d.get("precio", 0)}</li>'
+            for d in detalles
+        )
+
+        cuerpo_html = f"""
+        <html>
+        <body style="background-color:{ECO_BG};font-family:Montserrat,sans-serif;color:{ECO_DARK};padding:20px;">
+            <h2 style="text-align:center;color:{ECO_MEDIUM};">✅ ¡Compra Confirmada!</h2>
+            <p>Hola <b>{email}</b>,</p>
+            <p>Tu compra fue registrada correctamente. Aquí tienes los detalles:</p>
+            <ul>
+                <li><b>Forma de pago:</b> {forma_pago.capitalize()}</li>
+                <li><b>Fecha de visita:</b> {fecha}</li>
+                <li><b>Monto total:</b> ${total}</li>
+            </ul>
+            <h4 style="color:{ECO_MEDIUM};">Entradas:</h4>
+            <ul>{detalles_html}</ul>
+            <p style="margin-top:20px;">¡Gracias por tu compra y que disfrutes tu visita!</p>
+            <p style="font-size:12px;color:gray;">Este es un mensaje automático. Por favor, no respondas a este correo.</p>
+        </body>
+        </html>
+        """
+
+        # ----- Enviar correo real -----
+        mensaje = MIMEMultipart("alternative")
+        mensaje["From"] = remitente
+        mensaje["To"] = email
+        mensaje["Subject"] = asunto
+
+        mensaje.attach(MIMEText(cuerpo_texto, "plain"))
+        mensaje.attach(MIMEText(cuerpo_html, "html"))
+
+        with smtplib.SMTP("smtp.gmail.com", 587) as servidor:
+            servidor.starttls()
+            servidor.login(remitente, contraseña)
+            servidor.send_message(mensaje)
+
+        print(f"✅ Mail enviado correctamente a {email}")
         return jsonify({"message": "Correo enviado correctamente"}), 200
 
     except Exception as e:
         traceback.print_exc()
-        return jsonify({"error": "Error al enviar el correo"}), 500
+        return jsonify({"error": f"Error al enviar el correo: {str(e)}"}), 500
+
+
+"""@app.route('/api/confirmar_pago', methods=['POST'])
+def confirmar_pago():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No se recibieron datos"}), 400
+
+        usuario = Usuario(mail=data["usuario_email"])
+        forma_pago = FormaPago(nombre=data["forma_pago_nombre"])
+        detalles = [
+            DetalleEntrada(
+                edad_visitante=d["edad_visitante"],
+                tipo_entrada=TipoEntrada(nombre=d["tipo_entrada_nombre"], precio=d["precio"])
+            )
+            for d in data["detalles"]
+        ]
+
+        entrada = Entrada(
+            usuario=usuario,
+            cantidad=len(detalles),
+            fecha_visita=datetime.strptime(data["fecha_visita"], "%Y-%m-%d").date(),
+            forma_pago=forma_pago,
+            detalles_entrada=detalles
+        )
+
+        # Procesa el pago simulado
+        pago = entrada.procesar_pago()
+
+        # Solo guarda si el pago fue aprobado
+        if pago["status"] == "approved":
+            entrada_id = base_de_datos.insertar_entrada(
+                usuario_email=usuario.mail,
+                cantidad=entrada.cantidad,
+                fecha_visita=str(entrada.fecha_visita),
+                forma_pago_nombre=forma_pago.nombre,
+                forma_pago_descripcion=forma_pago.descripcion if hasattr(forma_pago, "descripcion") else None,
+                fecha_compra=str(entrada.fecha_compra),
+                estado_pago=entrada.estado_pago
+            )
+
+            for detalle in detalles:
+                tipo = detalle.tipo_entrada
+                base_de_datos.insertar_detalle(
+                    entrada_id=entrada_id,
+                    edad_visitante=detalle.edad_visitante,
+                    tipo_entrada_nombre=tipo.nombre,
+                    tipo_entrada_precio=tipo.precio
+                )
+
+            print(f"💾 Compra registrada en la base de datos (ID: {entrada_id})")
+
+        return jsonify({"status": pago["status"]}), 200
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": f"Error al confirmar pago: {str(e)}"}), 500"""
 
 
 # --- Punto de entrada para ejecutar el servidor ---

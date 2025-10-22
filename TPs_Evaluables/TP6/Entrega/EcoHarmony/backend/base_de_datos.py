@@ -141,17 +141,43 @@ def get_or_create_forma_pago(nombre: str, descripcion: Optional[str]) -> int:
         conn.close()
 
 
-def get_or_create_tipo_entrada(nombre: str, descripcion: Optional[str], precio: float) -> int:
+"""def get_or_create_tipo_entrada(nombre: str, descripcion: Optional[str], precio: float) -> int:
     conn = get_connection()
     try:
         cur = conn.cursor()
-        cur.execute('SELECT id FROM tipoEntrada WHERE nombre = ? AND precio = ?', (nombre, precio))
+        cur.execute('SELECT id FROM tipoEntrada WHERE nombre = ?', (nombre, precio))
         row = cur.fetchone()
         if row:
             return row['id']
         cur.execute('INSERT INTO tipoEntrada (nombre, descripcion, precio) VALUES (?, ?, ?)', (nombre, descripcion, precio))
         conn.commit()
         return cur.lastrowid
+    finally:
+        conn.close()"""
+
+
+def get_or_create_tipo_entrada(nombre: str, descripcion: Optional[str], precio: float) -> int:
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        # Buscar solo por nombre (no por precio)
+        cur.execute('SELECT id FROM tipoEntrada WHERE nombre = ?', (nombre,))
+        row = cur.fetchone()
+        if row:
+            return row['id']
+
+        try:
+            cur.execute(
+                'INSERT INTO tipoEntrada (nombre, descripcion, precio) VALUES (?, ?, ?)',
+                (nombre, descripcion, precio)
+            )
+            conn.commit()
+            return cur.lastrowid
+        except sqlite3.IntegrityError:
+            # Si ya existía (por restricción UNIQUE), la volvemos a buscar
+            cur.execute('SELECT id FROM tipoEntrada WHERE nombre = ?', (nombre,))
+            row = cur.fetchone()
+            return row['id'] if row else None
     finally:
         conn.close()
 

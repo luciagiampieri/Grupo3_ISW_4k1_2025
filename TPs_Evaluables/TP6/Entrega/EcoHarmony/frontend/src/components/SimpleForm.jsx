@@ -290,14 +290,21 @@ export default function SimpleForm() {
           sessionStorage.setItem('purchaseData', JSON.stringify(datosCompra));
           navigate('/fakemercadopago'); // 🔹 redirección inmediata, sin delay
         } else {
-          // 💵 Si es efectivo, se envía mail directamente
-          await fetch('http://127.0.0.1:5000/api/enviar_mail', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(datosCompra),
-          });
-        }
+        // 💵 Si es efectivo, primero guarda en la BD
+        await fetch('http://127.0.0.1:5000/api/confirmar_pago', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(datosCompra),
+        });
+
+        // Luego envía el mail
+        await fetch('http://127.0.0.1:5000/api/enviar_mail', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(datosCompra),
+        });
       }
+    }
 
     } catch (error) {
       console.error("Error de conexión:", error);

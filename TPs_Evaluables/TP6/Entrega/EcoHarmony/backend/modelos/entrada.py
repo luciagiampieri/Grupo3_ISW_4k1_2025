@@ -52,6 +52,7 @@ class Entrada:
         else:
             return True
 
+
     # --- Nuevo método auxiliar para generar el HTML del correo ---
     def _generar_html_compra(self):
         # Datos para el HTML
@@ -177,37 +178,64 @@ class Entrada:
         return html_body
 
 
-    def procesar_pago(self):
-        # ... (código para procesar el pago)
-        
+    """def procesar_pago(self):
+
         monto = self.monto_total()
         pago = self.forma_pago.procesar_pago(monto)
         self.estado_pago = pago["status"]
 
+        # 🔸 Si el pago fue aprobado, guardamos el monto pagado. Si no, 0.
         if pago["status"] == "approved":
             self.monto_total_pagado = self.monto_total()
+        else:
+            self.monto_total_pagado = 0
 
-            asunto = "Confirmación de compra en EcoHarmony"
-            
-            # --- Generar contenido del email ---
-            cuerpo_texto = (
-                f"Hola {self.usuario.mail},\n\n"
-                f"Tu compra fue confirmada exitosamente.\n"
-                f"Monto pagado: ${monto}\n"
-                f"Fecha de visita: {self.fecha_visita}\n\n"
-                "¡Gracias por tu compra y que disfrutes tu visita!"
+        # --- 🔸 Guardar siempre la compra en la base de datos ---
+        try:
+            entrada_id = base_de_datos.insertar_entrada(
+                usuario_email=self.usuario.mail,
+                cantidad=self.cantidad,
+                fecha_visita=str(self.fecha_visita),
+                forma_pago_nombre=self.forma_pago.nombre if hasattr(self.forma_pago, 'nombre') else str(self.forma_pago),
+                forma_pago_descripcion=getattr(self.forma_pago, 'descripcion', None),
+                fecha_compra=str(self.fecha_compra),
+                estado_pago=self.estado_pago
             )
-            cuerpo_html = self._generar_html_compra() # Llamamos al nuevo método auxiliar
-            # -----------------------------------
 
-            try:
-                # Modificación: Pasar tanto el texto plano como el HTML
-                self.enviar_mail(self.usuario.mail, asunto, cuerpo_texto, cuerpo_html) 
-                print(f"Mail de confirmación enviado a {self.usuario.mail}")
-            except Exception as e:
-                print(f"⚠️ Error al enviar mail: {e}")
-            # ... (código para persistir en la DB) ...
-            
+            # Insertar cada detalle asociado
+            for detalle in self.detalles_entrada:
+                tipo = detalle.tipo_entrada
+                base_de_datos.insertar_detalle(
+                    entrada_id=entrada_id,
+                    edad_visitante=detalle.edad_visitante,
+                    tipo_entrada_nombre=getattr(tipo, 'nombre', str(tipo)),
+                    tipo_entrada_descripcion=getattr(tipo, 'descripcion', None),
+                    tipo_entrada_precio=getattr(tipo, 'precio', float(getattr(tipo, 'precio', 0)))
+                )
+
+            print(f"💾 Compra registrada en la base de datos (ID: {entrada_id})")
+
+        except Exception as e:
+            print(f"⚠️ Error al persistir en DB: {e}")
+
+        # Devuelve el resultado del pago (para el frontend)
+        return pago"""
+
+
+    def procesar_pago(self):
+        """
+        Procesa el pago (simulación) y devuelve el estado.
+        Ya no guarda en la base de datos directamente.
+        """
+
+        monto = self.monto_total()
+        pago = self.forma_pago.procesar_pago(monto)
+        self.estado_pago = pago["status"]
+
+        # 🔸 Si el pago fue aprobado, guardamos el monto pagado. Si no, 0.
+        self.monto_total_pagado = self.monto_total() if pago["status"] == "approved" else 0
+
+        # Solo devuelve el resultado, sin guardar
         return pago
 
 

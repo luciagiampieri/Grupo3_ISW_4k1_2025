@@ -16,20 +16,27 @@ export default function FakeMercadoPago() {
     setPurchaseData(JSON.parse(storedData));
   }, [navigate]);
 
-  const handleConfirm = async () => {
-    try {
-      // 💳 Envía el mail al confirmar pago
-      await fetch('http://127.0.0.1:5000/api/enviar_mail', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(purchaseData),
-      });
-    } catch (error) {
-      console.error("Error al enviar el mail:", error);
-    }
+    const handleConfirm = async () => {
+      try {
+        // 💳 Primero guarda en la base de datos
+        await fetch('http://127.0.0.1:5000/api/confirmar_pago', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(purchaseData),
+        });
 
-    navigate('/detalle-compra');
-  };
+        // 💌 Luego envía el mail de confirmación
+        await fetch('http://127.0.0.1:5000/api/enviar_mail', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(purchaseData),
+        });
+
+        navigate('/detalle-compra');
+      } catch (error) {
+        console.error("Error al confirmar el pago:", error);
+      }
+    };
 
 
   const handleCancel = () => {
