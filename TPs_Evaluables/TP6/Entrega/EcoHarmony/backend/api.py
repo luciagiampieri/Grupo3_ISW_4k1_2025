@@ -25,7 +25,7 @@ except ImportError:
     from modelos.detalleEntrada import DetalleEntrada
     from modelos.entrada import Entrada
 
-# --- Creación de la Aplicación Flask ---
+# Creación de la Aplicación Flask
 app = Flask(__name__)
 
 CORS(app)
@@ -53,7 +53,7 @@ def comprar_entrada():
         if not data:
             return jsonify({"error": "No se recibieron datos (JSON vacío)."}), 400
 
-        # --- 2. Validar y "Rehidratar" los objetos de dominio ---
+        # 2. Validar y "Rehidratar" los objetos de dominio 
         
         # 2a. Validar Usuario (Criterio de Aceptación)
         usuario_email = data.get('usuario_email')
@@ -103,7 +103,7 @@ def comprar_entrada():
                 # Si la función solo devuelve el precio
                 tipo_entrada_obj = TipoEntrada(nombre=tipo_nombre, descripcion=None, precio=float(tipo_row))
             else:
-                # intento genérico (por si retorna sqlite3.Row)
+                # intento genérico 
                 try:
                     nombre = tipo_row['nombre'] if 'nombre' in tipo_row else tipo_nombre
                     precio = float(tipo_row['precio'])
@@ -119,7 +119,7 @@ def comprar_entrada():
             detalles_entrada_obj.append(detalle)
         cantidad = len(detalles_entrada_obj)
 
-        # --- 3. Crear la instancia principal de Entrada ---
+        # 3. Crear la instancia principal de Entrada
         entrada = Entrada(
             usuario=usuario,
             cantidad=cantidad,
@@ -128,7 +128,7 @@ def comprar_entrada():
             detalles_entrada=detalles_entrada_obj
         ) #
 
-        # --- 4. Ejecutar la Lógica de Negocio (RE-USANDO tus validaciones) ---
+        # 4. Ejecutar la Lógica de Negocio
         # Si algo falla aquí, lanzará un ValueError que capturará el 'except'
 
         entrada.validar_cantidad_entradas()
@@ -137,13 +137,12 @@ def comprar_entrada():
         # 5. Procesar el pago (no enviar mail automático desde aquí; el frontend llamará a /api/enviar_mail)
         resultado_pago = entrada.procesar_pago(enviar_mail=False)
 
-        # --- 6. Devolver Respuesta Exitosa ---
+        # 6. Devolver Respuesta Exitosa 
         # El frontend recibirá este JSON y podrá actuar (ej. redirigir a MP)
         return jsonify(resultado_pago), 200
 
     except ValueError as e:
-        # ¡Magia! Capturamos cualquier error de validación de tus modelos
-        # (ej. "La fecha de visita no puede ser un lunes...")
+        # Captura de errores de validación esperados
         return jsonify({"error": str(e)}), 400 # 400 Bad Request
 
     except Exception as e:
@@ -204,7 +203,7 @@ def confirmar_pago():
             detalles_entrada=detalles
         )
 
-        # Procesar pago (simulación) sin enviar mail automático (frontend gestionará el envío explícito)
+        # Procesar pago (simulación) sin enviar mail automático
         pago = entrada.procesar_pago(enviar_mail=False)
 
         print("🟢 Resultado de procesar_pago:", pago)
@@ -312,7 +311,7 @@ def enviar_mail_confirmacion(): # Se renombró para evitar conflicto con el mét
         # 3. Usar el método interno para generar el HTML completo
         cuerpo_html = entrada._generar_html_compra()
         
-        # 4. Generar cuerpo de texto simple (fallback)
+        # 4. Generar cuerpo de texto simple
         total = entrada.monto_total() # Se calcula el total correctamente
         cuerpo_texto = (
             f"Hola {email},\n\n"
@@ -338,7 +337,7 @@ def enviar_mail_confirmacion(): # Se renombró para evitar conflicto con el mét
         import traceback; traceback.print_exc()
         return jsonify({"error": f"Error al enviar el correo: {str(e)}"}), 500
 
-# --- Punto de entrada para ejecutar el servidor ---
+# Punto de entrada para ejecutar el servidor 
 if __name__ == '__main__':
     # init_db() # Si necesitas asegurar que la DB se inicie (aunque base_de_datos.py ya lo hace)
     print("Servidor API de EcoHarmony iniciado en http://127.0.0.1:5000")

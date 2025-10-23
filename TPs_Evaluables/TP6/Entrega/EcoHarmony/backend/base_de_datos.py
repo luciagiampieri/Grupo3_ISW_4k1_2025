@@ -10,7 +10,7 @@ DB_PATH = os.path.join(BASE_DIR, 'ecoharmony.db')
 def get_connection():
     """Returna una conexión a la base de datos SQLite."""
     conn = sqlite3.connect(DB_PATH)
-    # usar row_factory para acceder por nombre de columna si hace falta
+    # Usar row_factory para acceder por nombre de columna si hace falta
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -27,7 +27,7 @@ def init_db():
     conn = get_connection()
     cursor = conn.cursor()
 
-    # tabla usuario
+    # Tabla usuario
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS usuario (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,7 +35,7 @@ def init_db():
     );
     ''')
 
-    # tabla tipoEntrada
+    # Tabla tipoEntrada
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS tipoEntrada (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,7 +45,7 @@ def init_db():
     );
     ''')
 
-    # tabla formaPago
+    # Tabla formaPago
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS formaPago (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -54,7 +54,7 @@ def init_db():
     );
     ''')
 
-    # tabla entrada
+    # Tabla entrada
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS entrada (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -69,7 +69,7 @@ def init_db():
     );
     ''')
 
-    # tabla detalleEntrada
+    # Tabla detalleEntrada
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS detalleEntrada (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -107,8 +107,7 @@ def init_db():
         conn.close()
 
     if db_exists:
-        # Si la DB ya existía, informamos (no creamos otra copia)
-        # Esto evita confusión cuando se ejecuta el proyecto desde distintos CWDs.
+        # Si la DB ya existía, informamos
         print(f"Usando base de datos existente en: {DB_PATH}")
     else:
         print(f"Base de datos creada en: {DB_PATH}")
@@ -233,5 +232,5 @@ def insertar_detalle(entrada_id: int, edad_visitante: int, tipo_entrada_nombre: 
 
 
 
-# Inicializar la DB al importar este módulo (seguro y idempotente)
+# Inicializar la DB al importar este módulo
 init_db()

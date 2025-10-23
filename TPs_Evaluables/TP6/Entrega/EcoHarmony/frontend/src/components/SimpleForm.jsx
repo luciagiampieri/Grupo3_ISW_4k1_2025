@@ -5,13 +5,13 @@ import "./SimpleForm.css";
 // Cierra los LUNES (1) | 0=Dom, 1=Lun, ... 6=Sáb
 const CLOSED_WEEKDAY = 1;
 
-// --- Precios base (deben coincidir con la DB) ---
+// Precios base (deben coincidir con la DB) 
 const TICKET_PRICES = {
   regular: 5000,
   vip: 10000,
 };
 
-// --- Lógica de descuento (replicada de detalleEntrada.py) ---
+// Lógica de descuento (replicada de detalleEntrada.py)
 function calcularMontoDetalle(edadStr, pase) {
   // Estandariza a minúsculas (ej. "VIP" -> "vip")
   const precioBase = TICKET_PRICES[pase.toLowerCase()];
@@ -30,7 +30,7 @@ function calcularMontoDetalle(edadStr, pase) {
   return precioBase;
 }
 
-// --- Helper para formatear a pesos ARS ---
+// Helper para formatear a pesos ARS
 const formatCurrency = (value) => {
   if (value === null || value === undefined) return "—"; // Guion para edades inválidas
   return value.toLocaleString("es-AR", {
@@ -76,7 +76,7 @@ export default function SimpleForm() {
   const [purchaseCompleted, setPurchaseCompleted] = useState(false);
   const [purchaseData, setPurchaseData] = useState(null);
 
-  // --- MODIFICADO: Cálculo de precios y DESGLOSE con dinero ---
+  // Cálculo de precios y DESGLOSE con dinero
   const calculoPrecios = useMemo(() => {
     let total = 0;
     
@@ -114,7 +114,7 @@ export default function SimpleForm() {
     // Convertir el objeto 'summary' en un array de strings legibles
     const breakdownLines = [];
 
-    // --- Lógica para agregar los subtotales en ( ) ---
+    // Lógica para agregar los subtotales en ( ) 
     if (summary.regular_full > 0) {
       const lineTotal = summary.regular_full * TICKET_PRICES.regular;
       breakdownLines.push(
@@ -274,8 +274,7 @@ export default function SimpleForm() {
       if (!response.ok) {
         setErrors({ api: resultado.error || "Error al procesar la compra." });
       } else {
-        // ¡Éxito! El backend devolvió un 200 OK
-        // Ej: {"status": "approved", ...}
+        // El backend devolvió un 200 OK
 
         // Guarda los datos de la compra
         setPurchaseData(datosCompra);
@@ -290,7 +289,7 @@ export default function SimpleForm() {
           sessionStorage.setItem('purchaseData', JSON.stringify(datosCompra));
           navigate('/fakemercadopago'); // 🔹 redirección inmediata, sin delay
         } else {
-        // 💵 Si es efectivo, primero guarda en la BD
+        // Si es efectivo, primero guarda en la BD
         await fetch('http://127.0.0.1:5000/api/confirmar_pago', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

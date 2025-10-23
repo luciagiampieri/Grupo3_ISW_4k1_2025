@@ -53,7 +53,7 @@ class Entrada:
             return True
 
 
-    # --- Nuevo método auxiliar para generar el HTML del correo ---
+    # Método auxiliar para generar el HTML del correo 
     def _generar_html_compra(self):
         # Datos para el HTML
         fecha_visita_str = self.fecha_visita.strftime("%d/%m/%Y")
@@ -63,21 +63,21 @@ class Entrada:
         for detalle in self.detalles_entrada:
             # Asumo que detalle tiene edad_visitante y tipo_entrada (con nombre)
             tipo_entrada_nombre = getattr(detalle.tipo_entrada, 'nombre', str(detalle.tipo_entrada)).capitalize()
-            # NOTA: No tengo DNI ni Nombre completo del visitante aquí, uso edad y tipo.
+            # No tengo DNI ni Nombre completo del visitante aquí, uso edad y tipo.
             participantes_html += (
                 f'<li style="margin-bottom: 5px;">'
                 f'Tipo: {tipo_entrada_nombre}, Edad: {detalle.edad_visitante}, Precio: ${detalle.calcular_monto()}'
                 f'</li>'
             )
         
-        # Uso los colores oficiales
+        # Paleta de colores EcoHarmony
         ECO_DARK = "#134611"
         ECO_MEDIUM = "#3E8914"
         ECO_BRIGHT = "#3DA35D"
         ECO_LIGHT = "#96E072"
         ECO_BG = "#E8FCCF"
         
-        # HTML del cuerpo del correo (simplificado y adaptado al contexto de Compra)
+        # HTML del cuerpo del correo
         html_body = f"""
             <!DOCTYPE html>
             <html>
@@ -224,7 +224,7 @@ class Entrada:
         #  Adjuntar el cuerpo de texto plano
         mensaje.attach(MIMEText(cuerpo_texto, "plain"))
 
-        #  Adjuntar el cuerpo HTML (si existe)
+        #  Adjuntar el cuerpo HTML
         if cuerpo_html:
             mensaje.attach(MIMEText(cuerpo_html, "html")) # Cambiamos 'plain' por 'html'
 
