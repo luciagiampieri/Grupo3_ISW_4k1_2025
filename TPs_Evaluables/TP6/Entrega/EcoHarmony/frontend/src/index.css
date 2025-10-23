@@ -43,7 +43,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
 
-  /* 💚 Fondo con tu imagen */
+  /*  Fondo con tu imagen */
   background: 
     linear-gradient(rgba(232, 252, 207, 0.7), rgba(150, 224, 114, 0.5)), /* capa verde suave */
     url('./assets/tatuss.png'); /* ruta relativa */

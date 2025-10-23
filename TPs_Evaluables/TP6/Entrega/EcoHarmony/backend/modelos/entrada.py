@@ -188,8 +188,8 @@ class Entrada:
         pago = self.forma_pago.procesar_pago(monto)
         self.estado_pago = pago["status"]
 
-        # 🔸 Si el pago fue aprobado, guardamos el monto pagado. Si no, 0.
-        self.monto_total_pagado = self.monto_total() if pago["status"] == "approved" else 0
+        #  Si el pago fue aprobado, guardamos el monto pagado. Si no, 0.
+        self.monto_total_pagado = monto if pago["status"] == "approved" else 0
 
         # Solo devuelve el resultado, sin guardar
         return pago
@@ -200,20 +200,20 @@ class Entrada:
         remitente = "ecoharmonyparque@gmail.com"
         contraseña = "nujk erab chhu bous" # Contraseña de aplicación
 
-        # 1️⃣ Crear el mensaje como MIMEMultipart
+        #  Crear el mensaje como MIMEMultipart
         mensaje = MIMEMultipart("alternative") # "alternative" es clave para texto/html
         mensaje["From"] = remitente
         mensaje["To"] = destinatario
         mensaje["Subject"] = asunto
 
-        # 2️⃣ Adjuntar el cuerpo de texto plano
+        #  Adjuntar el cuerpo de texto plano
         mensaje.attach(MIMEText(cuerpo_texto, "plain"))
 
-        # 3️⃣ Adjuntar el cuerpo HTML (si existe)
+        #  Adjuntar el cuerpo HTML (si existe)
         if cuerpo_html:
             mensaje.attach(MIMEText(cuerpo_html, "html")) # Cambiamos 'plain' por 'html'
 
-        # 4️⃣ Conectar con el servidor SMTP de Gmail
+        #  Conectar con el servidor SMTP de Gmail
         try:
             with smtplib.SMTP("smtp.gmail.com", 587) as servidor:
                 servidor.starttls()

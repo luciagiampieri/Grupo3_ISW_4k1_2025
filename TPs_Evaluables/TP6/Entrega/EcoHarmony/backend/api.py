@@ -172,17 +172,29 @@ def confirmar_pago():
 
         usuario = Usuario(mail=data["usuario_email"])
         forma_pago = FormaPago(nombre=data["forma_pago_nombre"], descripcion=f"Pago con {data['forma_pago_nombre']}")
-        detalles = [
-            DetalleEntrada(
-                edad_visitante=d["edad_visitante"],
-                tipo_entrada = TipoEntrada(
-                    nombre=d["tipo_entrada_nombre"],
-                    descripcion=f"Entrada {d['tipo_entrada_nombre']}",
-                    precio=d["precio"]
+
+        CATALOGO_PRECIOS = {
+            "regular": 5000,
+            "vip": 10000,
+        }
+        detalles = []
+        for d in data["detalles"]:
+            nombre_tipo = d["tipo_entrada_nombre"].strip().lower()
+            precio_base = CATALOGO_PRECIOS.get(nombre_tipo)
+            if precio_base is None:
+                return jsonify({"error": f"Tipo de entrada desconocido: {nombre_tipo}"}), 400
+
+            tipo = TipoEntrada(
+                nombre=nombre_tipo,
+                descripcion=f"Entrada {nombre_tipo}",
+                precio=precio_base  # base, sin descuento aplicado
+            )
+            detalles.append(
+                DetalleEntrada(
+                    edad_visitante=d["edad_visitante"],
+                    tipo_entrada=tipo
                 )
             )
-            for d in data["detalles"]
-        ]
 
         entrada = Entrada(
             usuario=usuario,
@@ -195,7 +207,7 @@ def confirmar_pago():
         # Procesar pago (simulación)
         pago = entrada.procesar_pago()
 
-        print("🟢 Resultado de procesar_pago:", pago)  # ✅ ahora sí
+        print("🟢 Resultado de procesar_pago:", pago) 
 
         if pago["status"] == "approved":
 
@@ -218,7 +230,7 @@ def confirmar_pago():
                     entrada_id=entrada_id,
                     edad_visitante=detalle.edad_visitante,
                     tipo_entrada_nombre=tipo.nombre,
-                    tipo_entrada_descripcion=getattr(tipo, "descripcion", None),  # 👈 agregado
+                    tipo_entrada_descripcion=getattr(tipo, "descripcion", None),  
                     tipo_entrada_precio=tipo.precio
             )
 
@@ -255,15 +267,37 @@ def enviar_mail_confirmacion(): # Se renombró para evitar conflicto con el mét
         # Necesitamos recrear los objetos DetalleEntrada para que calcular_monto() funcione
         detalles_entrada_obj = []
         for d in detalles_data:
-            detalle = DetalleEntrada(
-                edad_visitante=d["edad_visitante"],
-                tipo_entrada=TipoEntrada(
-                    nombre=d["tipo_entrada_nombre"],
-                    descripcion=f"Entrada {d['tipo_entrada_nombre']}",
-                    precio=d["precio"] # Este precio ya viene del frontend y es el correcto
+            tipo_nombre = d["tipo_entrada_nombre"]
+            tipo_row = base_de_datos.get_tipo_entrada_por_nombre(tipo_nombre)
+
+            if not tipo_row:
+                return jsonify({"error": f"El tipo de entrada '{tipo_nombre}' no es válido."}), 400
+
+            if isinstance(tipo_row, TipoEntrada):
+                tipo_entrada_obj = tipo_row
+            elif isinstance(tipo_row, dict):
+                tipo_entrada_obj = TipoEntrada(
+                    nombre=tipo_row.get('nombre', tipo_nombre),
+                    descripcion=tipo_row.get('descripcion'),
+                    precio=float(tipo_row.get('precio', 0))
+                )
+            elif isinstance(tipo_row, (int, float)):
+                tipo_entrada_obj = TipoEntrada(nombre=tipo_nombre, descripcion=None, precio=float(tipo_row))
+            else:
+                try:
+                    nombre = tipo_row['nombre'] if 'nombre' in tipo_row else tipo_nombre
+                    precio = float(tipo_row['precio'])
+                    descripcion = tipo_row.get('descripcion', None) if hasattr(tipo_row, 'get') else None
+                    tipo_entrada_obj = TipoEntrada(nombre=nombre, descripcion=descripcion, precio=precio)
+                except Exception:
+                    return jsonify({"error": f"El tipo de entrada '{tipo_nombre}' no es válido."}), 400
+
+            detalles_entrada_obj.append(
+                DetalleEntrada(
+                    edad_visitante=d["edad_visitante"],
+                    tipo_entrada=tipo_entrada_obj  # precio base
                 )
             )
-            detalles_entrada_obj.append(detalle)
 
         fecha_visita_obj = datetime.strptime(fecha_visita_str, "%Y-%m-%d").date()
         

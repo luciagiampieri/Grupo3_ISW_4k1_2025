@@ -18,14 +18,14 @@ export default function FakeMercadoPago() {
 
     const handleConfirm = async () => {
       try {
-        // 💳 Primero guarda en la base de datos
+        //  Primero guarda en la base de datos
         await fetch('http://127.0.0.1:5000/api/confirmar_pago', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(purchaseData),
         });
 
-        // 💌 Luego envía el mail de confirmación
+        //  Luego envía el mail de confirmación
         await fetch('http://127.0.0.1:5000/api/enviar_mail', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

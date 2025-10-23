@@ -95,6 +95,7 @@ def init_db():
         cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("candelapaez62@mail.com",))
         cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("jsbarbera4@gmail.com",))
         cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("abdalavaleria@gmail.com",))
+        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("gabriellipedro778@gmail.com",))
         cursor.execute('INSERT OR IGNORE INTO tipoEntrada (nombre, descripcion, precio) VALUES (?, ?, ?)', ("regular", "Entrada regular", 5000))
         cursor.execute('INSERT OR IGNORE INTO tipoEntrada (nombre, descripcion, precio) VALUES (?, ?, ?)', ("vip", "Entrada VIP", 10000))
         cursor.execute('INSERT OR IGNORE INTO formaPago (nombre, descripcion) VALUES (?, ?)', ("efectivo", "Pago en efectivo"))
