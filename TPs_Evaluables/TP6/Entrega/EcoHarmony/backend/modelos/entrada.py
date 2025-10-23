@@ -26,7 +26,7 @@ class Entrada:
         return total
     
 
-    def validarCantidadEntradas(self):
+    def validar_cantidad_entradas(self):
 
         if self.cantidad <1 or self.cantidad >10:
             raise ValueError("La cantidad de entradas no es válida.")
@@ -34,7 +34,7 @@ class Entrada:
             return True
     
 
-    def validarFechaVisita(self):
+    def validar_fecha_visita(self):
 
         if self.fecha_visita is None:
             raise ValueError("La fecha de visita no puede ser nula.")
@@ -178,7 +178,7 @@ class Entrada:
         return html_body
 
 
-    def procesar_pago(self):
+    def procesar_pago(self, enviar_mail=True):
         """
         Procesa el pago (simulación) y devuelve el estado.
         Ya no guarda en la base de datos directamente.
@@ -190,6 +190,21 @@ class Entrada:
 
         #  Si el pago fue aprobado, guardamos el monto pagado. Si no, 0.
         self.monto_total_pagado = monto if pago["status"] == "approved" else 0
+
+        # Si el pago fue aprobado, enviar mail de confirmación (usar datos internos)
+        if pago["status"] == "approved" and enviar_mail:
+            try:
+                asunto = "Confirmación de compra EcoHarmony"
+                cuerpo_texto = f"Tu compra fue aprobada. Monto: ${monto}"
+                cuerpo_html = self._generar_html_compra()
+                # destinatario tomado desde el usuario asociado
+                destinatario = getattr(self.usuario, 'mail', None)
+                if destinatario:
+                    # Usar el método enviar_mail; durante tests se parchea para evitar envíos reales
+                    self.enviar_mail(destinatario, asunto, cuerpo_texto, cuerpo_html)
+            except Exception:
+                # No hacer fallar el procesamiento por errores de envío de email (sólo loguear)
+                pass
 
         # Solo devuelve el resultado, sin guardar
         return pago

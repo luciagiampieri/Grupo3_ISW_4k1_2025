@@ -6,6 +6,14 @@ from modelos.formaPago import FormaPago
 from modelos.entrada import Entrada
 from modelos.detalleEntrada import DetalleEntrada
 from datetime import date
+from unittest.mock import Mock, patch
+import pytest
+from modelos.tipoEntrada import TipoEntrada
+from modelos.usuario import Usuario
+from modelos.formaPago import FormaPago
+from modelos.entrada import Entrada
+from modelos.detalleEntrada import DetalleEntrada
+from datetime import date
 
 
 class TestCompra:
@@ -29,13 +37,13 @@ class TestCompra:
         detalles1 = [DetalleEntrada(edad_visitante=25, tipo_entrada=tipo1) for _ in range(1)]
         entrada1 = Entrada(usuario=usuario, cantidad=1, fecha_visita=date(2025,10,23),
                            forma_pago=forma_pago, detalles_entrada=detalles1)
-        assert entrada1.validarCantidadEntradas() == True
+        assert entrada1.validar_cantidad_entradas() == True
 
         # Límite máximo
         detalles10 = [DetalleEntrada(edad_visitante=25, tipo_entrada=tipo1) for _ in range(10)]
         entrada10 = Entrada(usuario=usuario, cantidad=10, fecha_visita=date(2025,10,23),
                             forma_pago=forma_pago, detalles_entrada=detalles10)
-        assert entrada10.validarCantidadEntradas() == True
+        assert entrada10.validar_cantidad_entradas() == True
     
 
     def test_validar_cantidad_invalida(self, datosTests):
@@ -48,14 +56,14 @@ class TestCompra:
         entrada0 = Entrada(usuario=usuario, cantidad=0, fecha_visita=date(2025,10,23),
                            forma_pago=forma_pago, detalles_entrada=detalles0)
         with pytest.raises(ValueError):
-            entrada0.validarCantidadEntradas()
+            entrada0.validar_cantidad_entradas()
 
         # Mayor que el límite máximo
         detalles11 = [DetalleEntrada(edad_visitante=25, tipo_entrada=tipo1) for _ in range(11)]
         entrada11 = Entrada(usuario=usuario, cantidad=11, fecha_visita=date(2025,10,23),
                             forma_pago=forma_pago, detalles_entrada=detalles11)
         with pytest.raises(ValueError):
-            entrada11.validarCantidadEntradas()
+            entrada11.validar_cantidad_entradas()
     
 
     def test_validar_fecha_visita_valida(self, datosTests):
@@ -68,7 +76,7 @@ class TestCompra:
                                  forma_pago=forma_pago, detalles_entrada=detalles) #creacion de la entrada con fecha valida
         
         # pasos para probar
-        resultado = entrada.validarFechaVisita()
+        resultado = entrada.validar_fecha_visita()
 
         #resultado esperado
         assert resultado == True
@@ -99,7 +107,7 @@ class TestCompra:
 
             # Resultado esperado es que se lance ValueError para cada caso inválido
             with pytest.raises(ValueError):
-                entrada.validarFechaVisita()
+                entrada.validar_fecha_visita()
             
 
     def test_usuario_registrado(self, datosTests):
@@ -306,4 +314,4 @@ class TestCompra:
         assert hasattr(forma_pago, 'nombre')
         assert hasattr(forma_pago, 'descripcion')
 
-   
+

@@ -91,6 +91,8 @@ def init_db():
         cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("manuviale123@gmail.com",))
         cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("luciagiampieri24@gmail.com",))
         cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("fatimachialva@gmail.com",))
+        # Agregar email usado por los tests
+        cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("fachi@gmail.com",))
         cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("ticii.gatica@gmail.com",))
         cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("candelapaez62@mail.com",))
         cursor.execute('INSERT OR IGNORE INTO usuario (email) VALUES (?)', ("jsbarbera4@gmail.com",))

@@ -130,12 +130,12 @@ def comprar_entrada():
 
         # --- 4. Ejecutar la Lógica de Negocio (RE-USANDO tus validaciones) ---
         # Si algo falla aquí, lanzará un ValueError que capturará el 'except'
-        
-        entrada.validarCantidadEntradas() #
-        entrada.validarFechaVisita()      #
 
-        # 5. Procesar el pago
-        resultado_pago = entrada.procesar_pago() #
+        entrada.validar_cantidad_entradas()
+        entrada.validar_fecha_visita()
+
+        # 5. Procesar el pago (no enviar mail automático desde aquí; el frontend llamará a /api/enviar_mail)
+        resultado_pago = entrada.procesar_pago(enviar_mail=False)
 
         # --- 6. Devolver Respuesta Exitosa ---
         # El frontend recibirá este JSON y podrá actuar (ej. redirigir a MP)
@@ -145,7 +145,7 @@ def comprar_entrada():
         # ¡Magia! Capturamos cualquier error de validación de tus modelos
         # (ej. "La fecha de visita no puede ser un lunes...")
         return jsonify({"error": str(e)}), 400 # 400 Bad Request
-    
+
     except Exception as e:
         # Captura para cualquier otro error inesperado (ej. error de sintaxis)
         print("--- ERROR INTERNO ---")
@@ -204,10 +204,10 @@ def confirmar_pago():
             detalles_entrada=detalles
         )
 
-        # Procesar pago (simulación)
-        pago = entrada.procesar_pago()
+        # Procesar pago (simulación) sin enviar mail automático (frontend gestionará el envío explícito)
+        pago = entrada.procesar_pago(enviar_mail=False)
 
-        print("🟢 Resultado de procesar_pago:", pago) 
+        print("🟢 Resultado de procesar_pago:", pago)
 
         if pago["status"] == "approved":
 
@@ -232,8 +232,7 @@ def confirmar_pago():
                     tipo_entrada_nombre=tipo.nombre,
                     tipo_entrada_descripcion=getattr(tipo, "descripcion", None),  
                     tipo_entrada_precio=tipo.precio
-            )
-
+                )
 
             print(f"💾 Compra confirmada y guardada en la base de datos (ID: {entrada_id})")
 
